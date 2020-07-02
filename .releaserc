@@ -1,0 +1,43 @@
+{
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "releaseRules": [
+          { "type": "docs", "scope": "readme", "release": "patch" }
+        ],
+        "parserOpts": {
+          "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+        }
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "writerOpts": {
+          "commitsSort": ["subject", "scope"]
+        },
+        "presetConfig": {
+          "types": [
+            { "type": "docs", "section": "Docs" }
+          ]
+        }
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": false
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "labels": false,
+        "releasedLabels": false
+      }
+    ]
+  ],
+  "branch": "master",
+  "ci": true
+}

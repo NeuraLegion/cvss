@@ -1,0 +1,49 @@
+name: Automated deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      project_version: ${{ steps.project_version.outputs.value }}
+      project: ${{ steps.project.outputs.value }}
+    steps:
+      - id: project_version
+        run: echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
+      - id: project
+        run: echo ::set-output name=value::$(echo ${GITHUB_REPOSITORY#*/} | tr A-Z a-z)
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: prepare
+    env:
+      PROJECT: ${{ needs.prepare.outputs.project }}
+      VERSION: ${{ needs.prepare.outputs.project_version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GPR_TOKEN }}
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm version --no-git-tag-version "$VERSION"
+      - run: npm ci -q
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: actions/setup-node@v1
+        with:
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@NeuraLegion'
+
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GPR_TOKEN }}
