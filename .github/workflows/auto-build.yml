@@ -13,8 +13,6 @@ jobs:
         node-version: [11.x, 12.x, 13.x]
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GPR_TOKEN }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -22,3 +20,4 @@ jobs:
       - run: npm ci
       - run: npm run format
       - run: npm run lint
+      - run: npm run test

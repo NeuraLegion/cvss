@@ -17,6 +17,6 @@ jobs:
           node-version: 12
 
       - name: Semantic release
-        run: npm run semantic-release
+        run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GPR_TOKEN }}

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc/libs/auth-providers",
+    "module": "CommonJS",
+    "types": ["mocha", "node"],
+    "target": "ES5"
+  },
+  "include": ["tests/**/*.spec.ts"],
+  "exclude": ["node_modules", "dist"]
+}
