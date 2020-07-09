@@ -21,14 +21,12 @@ export const validateVersion = (versionStr: string | null): void => {
   }
 };
 
-const validateVector = (vectorStr: string | null): string => {
+const validateVector = (vectorStr: string | null): void => {
   if (!vectorStr || vectorStr.includes('//')) {
     throw new Error(
       'Invalid CVSS string. Example: CVSS:3.0/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L'
     );
   }
-
-  return vectorStr;
 };
 
 const checkUnknownBaseMetrics = (metricsMap: Map<string, string>): void => {
