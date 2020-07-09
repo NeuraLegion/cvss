@@ -2,13 +2,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
+    "declarationDir": "dist",
     "target": "es2018",
-    "lib": [
-      "es2018"
-    ],
-    "module": "commonjs",
+    "lib": ["es2018"],
+    "module": "ES2015",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
     "noFallthroughCasesInSwitch": true,
@@ -24,22 +23,13 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "typeRoots": [
-      "node_modules/@types",
-      "@types"
-    ],
+    "typeRoots": ["node_modules/@types", "@types"],
     "skipLibCheck": true,
     "newLine": "LF",
     "declaration": true,
-    "inlineSources": true,
-    "inlineSourceMap": true
+    "inlineSources": false,
+    "inlineSourceMap": false
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "tests"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "tests"]
 }

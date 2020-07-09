@@ -1,18 +1,18 @@
 {
-  "name": "@neuralegion/service-lib-template",
-  "version": "0.0.0",
+  "name": "cvss",
+  "version": "0.1.0",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NeuraLegion/service-lib-template.git"
+    "url": "git+https://github.com/NeuraLegion/cvss.git"
   },
   "author": {
-    "name": "Artem Derevnjuk",
-    "email": "artem.derevnjuk@neuralegion.com"
+    "name": "Viachaslau Tyshkavets",
+    "email": "viachaslau.tyshkavets@neuralegion.com"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NeuraLegion/service-lib-template/issues"
+    "url": "https://github.com/NeuraLegion/cvss/issues"
   },
   "husky": {
     "hooks": {
@@ -37,44 +37,53 @@
       "git add"
     ]
   },
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "main": "./dist/bundle.umd.js",
+  "module": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
   "scripts": {
+    "clean": "rm -rf ./dist",
     "semantic-release": "semantic-release",
-    "lint": "eslint -c .eslintrc 'src/**/*.ts'",
-    "format": "prettier --check 'src/**/*.ts'",
-    "test": "mocha -r ts-node/register -r tsconfig-paths/register tests/**/*.spec.ts",
-    "build": "tsc -p tsconfig.json",
+    "lint": "eslint -c .eslintrc  --ext .ts src && eslint -c ./tests/.eslintrc  --ext .ts tests",
+    "format": "prettier --check src tests",
+    "format:write": "prettier --write .",
+    "test": "cross-env TS_NODE_PROJECT=./tsconfig.spec.json mocha -r ts-node/register -r tsconfig-paths/register tests/**/*.spec.ts",
+    "build": "tsc && rollup -c rollup.config.js",
     "prepublishOnly": "npm run build"
   },
-  "homepage": "https://github.com/NeuraLegion/service-lib-template#readme",
+  "homepage": "https://github.com/NeuraLegion/cvss#readme",
   "dependencies": {
-    "tslib": "~1.11.1"
+    "tslib": "~2.0.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/cli": "^9.0.1",
+    "@commitlint/config-conventional": "^9.0.1",
     "@types/chai": "^4.2.11",
-    "@types/chai-as-promised": "^7.1.2",
+    "@types/chai-as-promised": "^7.1.3",
     "@types/debug": "^4.1.5",
     "@types/mocha": "~7.0.2",
-    "@types/node": "~14.0.13",
-    "@typescript-eslint/eslint-plugin": "^3.3.0",
-    "@typescript-eslint/parser": "^3.3.0",
+    "@types/node": "~14.0.20",
+    "@typescript-eslint/eslint-plugin": "^3.6.0",
+    "@typescript-eslint/parser": "^3.6.0",
     "chai": "~4.2.0",
     "chai-as-promised": "^7.1.1",
+    "cross-env": "^7.0.2",
     "debug": "^4.1.1",
-    "eslint": "^7.2.0",
+    "eslint": "^7.4.0",
     "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-prefer-arrow": "^1.2.1",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "mocha": "~8.0.1",
     "nyc": "~15.1.0",
     "prettier": "~2.0.5",
-    "semantic-release": "^17.0.8",
+    "rollup": "^2.21.0",
+    "rollup-plugin-typescript2": "^0.27.1",
+    "semantic-release": "^17.1.1",
     "ts-node": "~8.10.2",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.6"
   }
 }
