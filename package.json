@@ -1,6 +1,6 @@
 {
   "name": "cvss",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": false,
   "repository": {
     "type": "git",
@@ -27,8 +27,7 @@
     ]
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/neuralegion",
-    "access": "restricted"
+    "access": "public"
   },
   "lint-staged": {
     "*.ts": [
