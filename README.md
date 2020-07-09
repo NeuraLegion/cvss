@@ -7,8 +7,8 @@ The Common Vulnerability Scoring System ([CVSS](https://www.first.org/cvss/)) [b
 CVSS outputs numerical scores, indicating severity of vulnerability, based on some principal technical vulnerability characteristics. 
 Its outputs include numerical scores indicating the severity of a vulnerability relative to other vulnerabilities. [Link](https://www.first.org/cvss/v3.1/specification-document#Introduction)
 
-The CVSS v3 vector string begins with the label `CVSS:` and a numeric representation of the version.
-After version string it contains a set of `/`-separated CVSS metrics.
+The CVSS v3 vector string begins with the label `CVSS:` and numeric representation of the version.
+After version string, it contains a set of `/`-separated CVSS metrics.
 Each metric consists of name and value (both abbreviated) separated with ':'.
 
 ### Sample
