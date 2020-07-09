@@ -9,7 +9,7 @@ export enum BaseMetric {
   AVAILABILITY = 'A'
 }
 
-export const baseMetrics: BaseMetric[] = [
+export const baseMetrics: ReadonlyArray<BaseMetric> = [
   BaseMetric.ATTACK_VECTOR,
   BaseMetric.ATTACK_COMPLEXITY,
   BaseMetric.PRIVILEGES_REQUIRED,
