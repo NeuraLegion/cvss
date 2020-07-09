@@ -18,9 +18,9 @@ export const humanizeBaseMetric = (baseMetric: BaseMetric): string => {
       return 'Integrity';
     case BaseMetric.AVAILABILITY:
       return 'Availability';
+    default:
+      return 'Unknown';
   }
-
-  return 'Unknown';
 };
 
 // eslint-disable-next-line complexity
@@ -45,7 +45,7 @@ export const humanizeBaseMetricValue = (
       return 'Required';
     case 'U':
       return 'Unchanged';
+    default:
+      return 'Unknown';
   }
-
-  return 'Unknown';
 };

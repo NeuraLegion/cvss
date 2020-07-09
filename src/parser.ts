@@ -5,22 +5,22 @@ export interface KeyValue<K, V> {
   value: V;
 }
 
-const versionRegex = /^CVSS:(\d(?:\.\d)?)(.*)?$/;
+const VERSION_REGEX = /^CVSS:(\d(?:\.\d)?)(.*)?$/;
 
 export const parseVersion = (cvssStr: string): string | null => {
-  const versionRegexRes = versionRegex.exec(cvssStr);
+  const versionRegexRes = VERSION_REGEX.exec(cvssStr);
 
   return versionRegexRes && versionRegexRes[1];
 };
 
 export const parseVector = (cvssStr: string): string | null => {
-  const versionRegexRes = versionRegex.exec(cvssStr);
+  const versionRegexRes = VERSION_REGEX.exec(cvssStr);
 
   return versionRegexRes && versionRegexRes[2] && versionRegexRes[2].substr(1);
 };
 
 export const parseMetrics = (vectorStr: string): KeyValue<string, string>[] =>
-  vectorStr.split('/').map((metric: string) => {
+  (vectorStr ? vectorStr.split('/') : []).map((metric: string) => {
     if (!metric) {
       return { key: '', value: '' };
     }
@@ -33,7 +33,7 @@ export const parseMetrics = (vectorStr: string): KeyValue<string, string>[] =>
 export const parseMetricsAsMap = (
   cvssStr: string
 ): Map<BaseMetric, BaseMetricValue> =>
-  parseMetrics(parseVector(cvssStr) as string).reduce(
+  parseMetrics(parseVector(cvssStr) || '').reduce(
     (
       res: Map<BaseMetric, BaseMetricValue>,
       metric: KeyValue<string, string>
@@ -44,9 +44,7 @@ export const parseMetricsAsMap = (
         );
       }
 
-      res.set(metric.key as BaseMetric, metric.value as BaseMetricValue);
-
-      return res;
+      return res.set(metric.key as BaseMetric, metric.value as BaseMetricValue);
     },
     new Map<BaseMetric, BaseMetricValue>()
   );
