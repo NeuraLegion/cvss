@@ -63,7 +63,7 @@ const getMetricNumericValue = (
 
   const score: Partial<Record<BaseMetricValue, number>> | null =
     baseMetricValueScores[metric];
-  if (score === null) {
+  if (!score) {
     throw new Error(`Internal error. Missing metric score: ${metric}`);
   }
 
