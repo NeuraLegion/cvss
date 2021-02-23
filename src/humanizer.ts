@@ -1,4 +1,4 @@
-import { BaseMetric, BaseMetricValue } from './models';
+import { BaseMetric, BaseMetricValue, Severity } from './models';
 
 export const humanizeBaseMetric = (baseMetric: BaseMetric): string => {
   switch (baseMetric) {
@@ -49,3 +49,10 @@ export const humanizeBaseMetricValue = (
       return 'Unknown';
   }
 };
+
+/**
+ * Stringify an score into a severity string ('None' | 'Low' | 'Medium' | 'High' | 'Critical')
+ * @param score
+ */
+export const toSeverity = (score: number): Severity =>
+  score <= 0 ? 'None' : score <= 3.9 ? 'Low' : score <= 6.9 ? 'Medium' : score <= 8.9 ? 'High' : 'Critical';
