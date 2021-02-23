@@ -60,7 +60,7 @@ export const environmentalMetrics: Metrics<EnvironmentalMetric> = [
   EnvironmentalMetric.INTEGRITY_REQUIREMENT
 ];
 
-export const baseMetricValues: MetricValues<BaseMetric, BaseMetricValue[]> = {
+export const baseMetricValues: MetricValues<BaseMetric, BaseMetricValue> = {
   [BaseMetric.ATTACK_VECTOR]: ['N', 'A', 'L', 'P'],
   [BaseMetric.ATTACK_COMPLEXITY]: ['L', 'H'],
   [BaseMetric.PRIVILEGES_REQUIRED]: ['N', 'L', 'H'],
@@ -137,3 +137,10 @@ export type AllMetricValues =
   | typeof baseMetricValues
   | typeof temporalMetricValues
   | typeof environmentalMetricValues;
+
+export type ScoreResult = {
+  score: number;
+  impact: number;
+  exploitability: number;
+  metricsMap: Map<Metric, MetricValue>;
+};

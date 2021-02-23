@@ -61,4 +61,18 @@ describe('parser', () => {
       validate('CVSS:3.1/AV:N/AC:L//PR:N/UI:N/S:C/C:H/I:H/A:H')
     ).to.throw('Invalid');
   });
+
+  it('should produce exception on double separator', () => {
+    expect(() =>
+      validate('CVSS:3.1/AV:N/AC:L//PR:N/UI:N/S:C/C:H/I:H/A:H')
+    ).to.throw('Invalid');
+  });
+
+  it('should not throw when validating extra scopes', () => {
+    expect(() =>
+      validate(
+        'CVSS:3.0/AV:A/AC:H/PR:L/UI:R/S:C/C:L/I:L/A:L/E:H/RL:U/RC:C/CR:M/IR:M/AR:M/MAV:N/MAC:L/MPR:N/MUI:N/MS:C/MC:H/MI:H/MA:H'
+      )
+    ).not.to.throw();
+  });
 });
