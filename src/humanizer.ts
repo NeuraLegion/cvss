@@ -55,4 +55,12 @@ export const humanizeBaseMetricValue = (
  * @param score
  */
 export const toSeverity = (score: number): Severity =>
-  score <= 0 ? 'None' : score <= 3.9 ? 'Low' : score <= 6.9 ? 'Medium' : score <= 8.9 ? 'High' : 'Critical';
+  score <= 0
+    ? 'None'
+    : score <= 3.9
+    ? 'Low'
+    : score <= 6.9
+    ? 'Medium'
+    : score <= 8.9
+    ? 'High'
+    : 'Critical';
