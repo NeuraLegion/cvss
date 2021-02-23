@@ -2,7 +2,8 @@ import {
   BaseMetric,
   BaseMetricValue,
   humanizeBaseMetric,
-  humanizeBaseMetricValue
+  humanizeBaseMetricValue,
+  toSeverity
 } from '../src';
 import { expect } from 'chai';
 
@@ -51,5 +52,24 @@ describe('humanizer', () => {
       ('X' as unknown) as BaseMetric
     );
     expect(result).to.equal('Unknown');
+  });
+});
+
+describe('risk levels', () => {
+  it('Should give None risk level when score is below 0', () => {
+    expect(toSeverity(0)).to.equal('None');
+    expect(toSeverity(-7)).to.equal('None');
+  });
+  it('Should give Low risk level when score is below 3', () => {
+    expect(toSeverity(3)).to.equal('Low');
+    expect(toSeverity(1.2654)).to.equal('Low');
+  });
+  it('Should give Medium risk level when score is below 6', () => {
+    expect(toSeverity(6)).to.equal('Medium');
+    expect(toSeverity(4.2654)).to.equal('Medium');
+  });
+  it('Should give High risk level when score is below 8.5', () => {
+    expect(toSeverity(8.5)).to.equal('High');
+    expect(toSeverity(7.2654)).to.equal('High');
   });
 });
