@@ -8,7 +8,6 @@ import {
   Metric,
   MetricValue,
   metricsIndex,
-  ScoreResult,
   TemporalMetric,
   temporalMetricMap,
   TemporalMetricValue
@@ -264,6 +263,13 @@ export const populateUndefinedMetrics = (
   });
 
   return metricsMap;
+};
+
+export type ScoreResult = {
+  score: number;
+  impact: number;
+  exploitability: number;
+  metricsMap: Map<Metric, MetricValue>;
 };
 
 // https://www.first.org/cvss/v3.1/specification-document#7-3-Environmental-Metrics-Equations

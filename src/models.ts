@@ -137,10 +137,3 @@ export type AllMetricValues =
   | typeof baseMetricValues
   | typeof temporalMetricValues
   | typeof environmentalMetricValues;
-
-export type ScoreResult = {
-  score: number;
-  impact: number;
-  exploitability: number;
-  metricsMap: Map<Metric, MetricValue>;
-};
