@@ -9,8 +9,6 @@ export enum BaseMetric {
   AVAILABILITY = 'A'
 }
 
-export type Severity = 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
-
 export const baseMetrics: ReadonlyArray<BaseMetric> = [
   BaseMetric.ATTACK_VECTOR,
   BaseMetric.ATTACK_COMPLEXITY,

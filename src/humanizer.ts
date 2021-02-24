@@ -51,10 +51,10 @@ export const humanizeBaseMetricValue = (
 };
 
 /**
- * Stringify an score into a severity string ('None' | 'Low' | 'Medium' | 'High' | 'Critical')
+ * Stringify a score into a qualitative severity rating string
  * @param score
  */
-export const toSeverity = (score: number): Severity =>
+export const humanizeScore = (score: number): string =>
   score <= 0
     ? 'None'
     : score <= 3.9
