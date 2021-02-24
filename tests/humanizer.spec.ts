@@ -2,7 +2,8 @@ import {
   BaseMetric,
   BaseMetricValue,
   humanizeBaseMetric,
-  humanizeBaseMetricValue
+  humanizeBaseMetricValue,
+  humanizeScore
 } from '../src';
 import { expect } from 'chai';
 
@@ -51,5 +52,33 @@ describe('humanizer', () => {
       ('X' as unknown) as BaseMetric
     );
     expect(result).to.equal('Unknown');
+  });
+
+  it('should humanize score as "None" for zero value', () => {
+    expect(humanizeScore(0)).to.equal('None');
+  });
+
+  it('should humanize score as "Low" for values from interval [0.1, 3.9]', () => {
+    expect(humanizeScore(0.1)).to.equal('Low');
+    expect(humanizeScore(1.2)).to.equal('Low');
+    expect(humanizeScore(3.9)).to.equal('Low');
+  });
+
+  it('should humanize score as "Medium" for values from interval [4.0, 6.9]', () => {
+    expect(humanizeScore(4.0)).to.equal('Medium');
+    expect(humanizeScore(4.2)).to.equal('Medium');
+    expect(humanizeScore(6.9)).to.equal('Medium');
+  });
+
+  it('should humanize score as "High" for values from interval [7.0, 8.9]', () => {
+    expect(humanizeScore(7.0)).to.equal('High');
+    expect(humanizeScore(7.5)).to.equal('High');
+    expect(humanizeScore(8.9)).to.equal('High');
+  });
+
+  it('should humanize score as "Critical" for values from interval [9.0, 10.0]', () => {
+    expect(humanizeScore(9.0)).to.equal('Critical');
+    expect(humanizeScore(9.5)).to.equal('Critical');
+    expect(humanizeScore(10.0)).to.equal('Critical');
   });
 });

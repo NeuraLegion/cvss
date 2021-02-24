@@ -49,3 +49,18 @@ export const humanizeBaseMetricValue = (
       return 'Unknown';
   }
 };
+
+/**
+ * Stringify a score into a qualitative severity rating string
+ * @param score
+ */
+export const humanizeScore = (score: number): string =>
+  score <= 0
+    ? 'None'
+    : score <= 3.9
+    ? 'Low'
+    : score <= 6.9
+    ? 'Medium'
+    : score <= 8.9
+    ? 'High'
+    : 'Critical';
