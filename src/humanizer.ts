@@ -1,4 +1,4 @@
-import { BaseMetric, BaseMetricValue, Severity } from './models';
+import { BaseMetric, BaseMetricValue } from './models';
 
 export const humanizeBaseMetric = (baseMetric: BaseMetric): string => {
   switch (baseMetric) {
