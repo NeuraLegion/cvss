@@ -265,20 +265,11 @@ export const populateUndefinedMetrics = (
   return metricsMap;
 };
 
-export type ScoreResult = {
-  score: number;
-  impact: number;
-  exploitability: number;
-  metricsMap: Map<Metric, MetricValue>;
-};
-
 // https://www.first.org/cvss/v3.1/specification-document#7-3-Environmental-Metrics-Equations
 // If ModifiedImpact <= 0 =>	0; else
 // If ModifiedScope is Unchanged =>	Roundup (Roundup [Minimum ([ModifiedImpact + ModifiedExploitability], 10)] × ExploitCodeMaturity × RemediationLevel × ReportConfidence)
 // If ModifiedScope is Changed =>	Roundup (Roundup [Minimum (1.08 × [ModifiedImpact + ModifiedExploitability], 10)] × ExploitCodeMaturity × RemediationLevel × ReportConfidence)
-export const calculateEnvironmentalScore = (
-  cvssString: string
-): ScoreResult => {
+export const calculateEnvironmentalScore = (cvssString: string): number => {
   const { versionStr } = validate(cvssString);
   let { metricsMap } = validate(cvssString);
 
@@ -311,19 +302,14 @@ export const calculateEnvironmentalScore = (
             getMetricNumericValue(TemporalMetric.REPORT_CONFIDENCE, metricsMap)
         );
 
-  return {
-    score,
-    metricsMap,
-    impact: impact <= 0 ? 0 : roundUp(impact),
-    exploitability: impact <= 0 ? 0 : roundUp(exploitability)
-  };
+  return score;
 };
 
 // https://www.first.org/cvss/v3.1/specification-document#7-1-Base-Metrics-Equations
 // If Impact <= 0 => 0; else
 // If Scope is Unchanged => Roundup (Minimum [(Impact + Exploitability), 10])
 // If Scope is Changed => Roundup (Minimum [1.08 × (Impact + Exploitability), 10])
-export const calculateBaseScore = (cvssString: string): ScoreResult => {
+export const calculateBaseScore = (cvssString: string): number => {
   const { metricsMap } = validate(cvssString);
 
   const iss = calculateIss(metricsMap);
@@ -338,17 +324,12 @@ export const calculateBaseScore = (cvssString: string): ScoreResult => {
       ? roundUp(Math.min(impact + exploitability, 10))
       : roundUp(Math.min(1.08 * (impact + exploitability), 10));
 
-  return {
-    score,
-    metricsMap,
-    impact: impact <= 0 ? 0 : roundUp(impact),
-    exploitability: impact <= 0 ? 0 : roundUp(exploitability)
-  };
+  return score;
 };
 
 // https://www.first.org/cvss/v3.1/specification-document#7-2-Temporal-Metrics-Equations
 // 	Roundup (BaseScore × ExploitCodeMaturity × RemediationLevel × ReportConfidence)
-export const calculateTemporalScore = (cvssString: string): ScoreResult => {
+export const calculateTemporalScore = (cvssString: string): number => {
   const { metricsMap } = validate(cvssString);
   // populate temp metrics if not provided
   [...temporalMetricMap].map((metric) => {
@@ -357,19 +338,12 @@ export const calculateTemporalScore = (cvssString: string): ScoreResult => {
     }
   });
 
-  const { score, impact, exploitability } = calculateBaseScore(cvssString);
-
-  const tempScore = roundUp(
-    score *
+  const score = roundUp(
+    calculateBaseScore(cvssString) *
       getMetricNumericValue(TemporalMetric.REPORT_CONFIDENCE, metricsMap) *
       getMetricNumericValue(TemporalMetric.EXPLOITABILITY, metricsMap) *
       getMetricNumericValue(TemporalMetric.REMEDIATION_LEVEL, metricsMap)
   );
 
-  return {
-    score: tempScore,
-    metricsMap,
-    impact,
-    exploitability
-  };
+  return score;
 };

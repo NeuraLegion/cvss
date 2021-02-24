@@ -113,7 +113,7 @@ describe('Calculate correctly base scores', () => {
     const cvss = entry[0];
     const baseScore = entry[1][0];
     it(`should calculate a score of ${baseScore} for ${cvss}`, () => {
-      const { score } = calculateBaseScore(cvss);
+      const score = calculateBaseScore(cvss);
       expect(score).to.equal(baseScore);
     });
   });
@@ -124,7 +124,7 @@ describe('Calculate correctly temporal scores', () => {
     const cvss = entry[0];
     const temporalScore = entry[1][1];
     it(`should calculate a score of ${temporalScore} for ${cvss}`, () => {
-      const { score } = calculateTemporalScore(cvss);
+      const score = calculateTemporalScore(cvss);
       expect(score).to.equal(temporalScore);
     });
   });
@@ -135,7 +135,7 @@ describe('Calculate correctly environmental scores', () => {
     const cvss = entry[0];
     const environmentalScore = entry[1][2];
     it(`should calculate a score of ${environmentalScore} for ${cvss}`, () => {
-      const { score } = calculateEnvironmentalScore(cvss);
+      const score = calculateEnvironmentalScore(cvss);
       expect(score).to.equal(environmentalScore);
     });
   });
