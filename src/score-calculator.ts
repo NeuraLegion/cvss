@@ -3,14 +3,14 @@ import {
   BaseMetric,
   BaseMetricValue,
   EnvironmentalMetric,
-  environmentalMetrics,
+  environmentalMetricMap,
   EnvironmentalMetricValue,
   Metric,
   MetricValue,
   metricsIndex,
   ScoreResult,
   TemporalMetric,
-  temporalMetrics,
+  temporalMetricMap,
   TemporalMetricValue
 } from './models';
 import { validate } from './validator';
@@ -200,7 +200,7 @@ export const calculateImpact = (
 // If ModifiedScope is Unchanged	6.42 × MISS
 // If ModifiedScope is Changed	7.52 × (MISS - 0.029) - 3.25 × (MISS × 0.9731 - 0.02)13
 // ModifiedExploitability =	8.22 × ModifiedAttackVector × ModifiedAttackComplexity × ModifiedPrivilegesRequired × ModifiedUserInteraction
-// Note : Math.pow is 15 in 3.0 but 13 int 3.1
+// Note : Math.pow is 15 in 3.0 but 13 in 3.1
 export const calculateMImpact = (
   metricsMap: Map<Metric, MetricValue>,
   miss: number,
@@ -246,7 +246,7 @@ const roundUp = (input: number): number => {
 export const populateUndefinedMetrics = (
   metricsMap: Map<Metric, MetricValue>
 ): Map<Metric, MetricValue> => {
-  [...temporalMetrics, ...environmentalMetrics].map((metric) => {
+  [...temporalMetricMap, ...environmentalMetricMap].map((metric) => {
     if (![...metricsMap.keys()].includes(metric)) {
       metricsMap.set(
         metric,
@@ -345,7 +345,7 @@ export const calculateBaseScore = (cvssString: string): ScoreResult => {
 export const calculateTemporalScore = (cvssString: string): ScoreResult => {
   const { metricsMap } = validate(cvssString);
   // populate temp metrics if not provided
-  [...temporalMetrics].map((metric) => {
+  [...temporalMetricMap].map((metric) => {
     if (![...metricsMap.keys()].includes(metric)) {
       metricsMap.set(metric, 'X');
     }

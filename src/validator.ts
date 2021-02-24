@@ -2,9 +2,9 @@ import {
   Metric,
   MetricValue,
   Metrics,
-  baseMetrics,
-  temporalMetrics,
-  environmentalMetrics,
+  baseMetricMap,
+  temporalMetricMap,
+  environmentalMetricMap,
   AllMetricValues,
   baseMetricValues,
   temporalMetricValues,
@@ -42,9 +42,9 @@ const checkUnknownMetrics = (
   knownMetrics?: Metrics
 ): void => {
   const allKnownMetrics = knownMetrics || [
-    ...baseMetrics,
-    ...temporalMetrics,
-    ...environmentalMetrics
+    ...baseMetricMap,
+    ...temporalMetricMap,
+    ...environmentalMetricMap
   ];
 
   [...metricsMap.keys()].forEach((userMetric: string) => {
@@ -60,7 +60,7 @@ const checkUnknownMetrics = (
 
 const checkMandatoryMetrics = (
   metricsMap: Map<string, string>,
-  metrics: Metrics = baseMetrics
+  metrics: Metrics = baseMetricMap
 ): void => {
   metrics.forEach((metric: Metric) => {
     if (!metricsMap.has(metric)) {
@@ -118,9 +118,9 @@ export const validate = (cvssStr: string): ValidationResult => {
     throw new Error('CVSS vector must start with "CVSS:"');
   }
   const allKnownMetrics = [
-    ...baseMetrics,
-    ...temporalMetrics,
-    ...environmentalMetrics
+    ...baseMetricMap,
+    ...temporalMetricMap,
+    ...environmentalMetricMap
   ];
   const allKnownMetricsValues = {
     ...baseMetricValues,
@@ -140,10 +140,10 @@ export const validate = (cvssStr: string): ValidationResult => {
   checkMetricsValues(metricsMap, allKnownMetrics, allKnownMetricsValues);
 
   const isTemporal = [...metricsMap.keys()].some((metric) =>
-    temporalMetrics.includes(metric as TemporalMetric)
+    temporalMetricMap.includes(metric as TemporalMetric)
   );
   const isEnvironmental = [...metricsMap.keys()].some((metric) =>
-    environmentalMetrics.includes(metric as EnvironmentalMetric)
+    environmentalMetricMap.includes(metric as EnvironmentalMetric)
   );
 
   return {

@@ -29,7 +29,7 @@ export enum EnvironmentalMetric {
   AVAILABILITY_REQUIREMENT = 'AR'
 }
 
-export const baseMetrics: ReadonlyArray<BaseMetric> = [
+export const baseMetricMap: ReadonlyArray<BaseMetric> = [
   BaseMetric.ATTACK_VECTOR,
   BaseMetric.ATTACK_COMPLEXITY,
   BaseMetric.PRIVILEGES_REQUIRED,
@@ -40,13 +40,13 @@ export const baseMetrics: ReadonlyArray<BaseMetric> = [
   BaseMetric.AVAILABILITY
 ];
 
-export const temporalMetrics: Metrics<TemporalMetric> = [
+export const temporalMetricMap: Metrics<TemporalMetric> = [
   TemporalMetric.EXPLOITABILITY,
   TemporalMetric.REMEDIATION_LEVEL,
   TemporalMetric.REPORT_CONFIDENCE
 ];
 
-export const environmentalMetrics: Metrics<EnvironmentalMetric> = [
+export const environmentalMetricMap: Metrics<EnvironmentalMetric> = [
   EnvironmentalMetric.ATTACK_VECTOR,
   EnvironmentalMetric.ATTACK_COMPLEXITY,
   EnvironmentalMetric.PRIVILEGES_REQUIRED,
