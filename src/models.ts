@@ -10,23 +10,23 @@ export enum BaseMetric {
 }
 
 export enum TemporalMetric {
-  EXPLOITABILITY = 'E',
+  EXPLOIT_CODE_MATURITY = 'E',
   REMEDIATION_LEVEL = 'RL',
   REPORT_CONFIDENCE = 'RC'
 }
 
 export enum EnvironmentalMetric {
-  ATTACK_VECTOR = 'MAV',
-  ATTACK_COMPLEXITY = 'MAC',
-  PRIVILEGES_REQUIRED = 'MPR',
-  USER_INTERACTION = 'MUI',
-  SCOPE = 'MS',
-  CONFIDENTIALITY = 'MC',
-  INTEGRITY = 'MI',
-  AVAILABILITY = 'MA',
   CONFIDENTIALITY_REQUIREMENT = 'CR',
   INTEGRITY_REQUIREMENT = 'IR',
-  AVAILABILITY_REQUIREMENT = 'AR'
+  AVAILABILITY_REQUIREMENT = 'AR',
+  MODIFIED_ATTACK_VECTOR = 'MAV',
+  MODIFIED_ATTACK_COMPLEXITY = 'MAC',
+  MODIFIED_PRIVILEGES_REQUIRED = 'MPR',
+  MODIFIED_USER_INTERACTION = 'MUI',
+  MODIFIED_SCOPE = 'MS',
+  MODIFIED_CONFIDENTIALITY = 'MC',
+  MODIFIED_INTEGRITY = 'MI',
+  MODIFIED_AVAILABILITY = 'MA'
 }
 
 export const baseMetricMap: ReadonlyArray<BaseMetric> = [
@@ -41,23 +41,23 @@ export const baseMetricMap: ReadonlyArray<BaseMetric> = [
 ];
 
 export const temporalMetricMap: Metrics<TemporalMetric> = [
-  TemporalMetric.EXPLOITABILITY,
+  TemporalMetric.EXPLOIT_CODE_MATURITY,
   TemporalMetric.REMEDIATION_LEVEL,
   TemporalMetric.REPORT_CONFIDENCE
 ];
 
 export const environmentalMetricMap: Metrics<EnvironmentalMetric> = [
-  EnvironmentalMetric.ATTACK_VECTOR,
-  EnvironmentalMetric.ATTACK_COMPLEXITY,
-  EnvironmentalMetric.PRIVILEGES_REQUIRED,
-  EnvironmentalMetric.USER_INTERACTION,
-  EnvironmentalMetric.SCOPE,
-  EnvironmentalMetric.CONFIDENTIALITY,
-  EnvironmentalMetric.INTEGRITY,
-  EnvironmentalMetric.AVAILABILITY,
   EnvironmentalMetric.AVAILABILITY_REQUIREMENT,
   EnvironmentalMetric.CONFIDENTIALITY_REQUIREMENT,
-  EnvironmentalMetric.INTEGRITY_REQUIREMENT
+  EnvironmentalMetric.INTEGRITY_REQUIREMENT,
+  EnvironmentalMetric.MODIFIED_ATTACK_VECTOR,
+  EnvironmentalMetric.MODIFIED_ATTACK_COMPLEXITY,
+  EnvironmentalMetric.MODIFIED_PRIVILEGES_REQUIRED,
+  EnvironmentalMetric.MODIFIED_USER_INTERACTION,
+  EnvironmentalMetric.MODIFIED_SCOPE,
+  EnvironmentalMetric.MODIFIED_CONFIDENTIALITY,
+  EnvironmentalMetric.MODIFIED_INTEGRITY,
+  EnvironmentalMetric.MODIFIED_AVAILABILITY
 ];
 
 export const baseMetricValues: MetricValues<BaseMetric, BaseMetricValue> = {
@@ -71,45 +71,33 @@ export const baseMetricValues: MetricValues<BaseMetric, BaseMetricValue> = {
   [BaseMetric.AVAILABILITY]: ['N', 'L', 'H']
 };
 
-export const environmentalMetricValues: MetricValues<
-  EnvironmentalMetric,
-  EnvironmentalMetricValue
-> = {
-  [EnvironmentalMetric.ATTACK_VECTOR]: ['N', 'A', 'L', 'P', 'X'],
-  [EnvironmentalMetric.ATTACK_COMPLEXITY]: ['L', 'H', 'X'],
-  [EnvironmentalMetric.PRIVILEGES_REQUIRED]: ['N', 'L', 'H', 'X'],
-  [EnvironmentalMetric.USER_INTERACTION]: ['N', 'R', 'X'],
-  [EnvironmentalMetric.SCOPE]: ['U', 'C', 'X'],
-  [EnvironmentalMetric.CONFIDENTIALITY]: ['N', 'L', 'H', 'X'],
-  [EnvironmentalMetric.INTEGRITY]: ['N', 'L', 'H', 'X'],
-  [EnvironmentalMetric.AVAILABILITY]: ['N', 'L', 'H', 'X'],
-  [EnvironmentalMetric.CONFIDENTIALITY_REQUIREMENT]: ['M', 'L', 'H', 'X'],
-  [EnvironmentalMetric.INTEGRITY_REQUIREMENT]: ['M', 'L', 'H', 'X'],
-  [EnvironmentalMetric.AVAILABILITY_REQUIREMENT]: ['M', 'L', 'H', 'X']
-};
-
 export const temporalMetricValues: MetricValues<
   TemporalMetric,
   TemporalMetricValue
 > = {
-  [TemporalMetric.EXPLOITABILITY]: ['X', 'U', 'P', 'F', 'H'],
-  [TemporalMetric.REMEDIATION_LEVEL]: ['X', 'O', 'T', 'W', 'U'],
-  [TemporalMetric.REPORT_CONFIDENCE]: ['X', 'U', 'R', 'C']
+  [TemporalMetric.EXPLOIT_CODE_MATURITY]: ['X', 'H', 'F', 'P', 'U'],
+  [TemporalMetric.REMEDIATION_LEVEL]: ['X', 'U', 'W', 'T', 'O'],
+  [TemporalMetric.REPORT_CONFIDENCE]: ['X', 'C', 'R', 'U']
 };
 
-export const metricsIndex: { [key: string]: BaseMetric } = {
-  MAV: BaseMetric.ATTACK_VECTOR,
-  MAC: BaseMetric.ATTACK_COMPLEXITY,
-  MPR: BaseMetric.PRIVILEGES_REQUIRED,
-  MUI: BaseMetric.USER_INTERACTION,
-  MS: BaseMetric.SCOPE,
-  MC: BaseMetric.CONFIDENTIALITY,
-  MI: BaseMetric.INTEGRITY,
-  MA: BaseMetric.AVAILABILITY
+export const environmentalMetricValues: MetricValues<
+  EnvironmentalMetric,
+  EnvironmentalMetricValue
+> = {
+  [EnvironmentalMetric.CONFIDENTIALITY_REQUIREMENT]: ['X', 'H', 'M', 'L'],
+  [EnvironmentalMetric.INTEGRITY_REQUIREMENT]: ['X', 'H', 'M', 'L'],
+  [EnvironmentalMetric.AVAILABILITY_REQUIREMENT]: ['X', 'H', 'M', 'L'],
+  [EnvironmentalMetric.MODIFIED_ATTACK_VECTOR]: ['X', 'N', 'A', 'L', 'P'],
+  [EnvironmentalMetric.MODIFIED_ATTACK_COMPLEXITY]: ['X', 'L', 'H'],
+  [EnvironmentalMetric.MODIFIED_PRIVILEGES_REQUIRED]: ['X', 'N', 'L', 'H'],
+  [EnvironmentalMetric.MODIFIED_USER_INTERACTION]: ['X', 'N', 'R'],
+  [EnvironmentalMetric.MODIFIED_SCOPE]: ['X', 'U', 'C'],
+  [EnvironmentalMetric.MODIFIED_CONFIDENTIALITY]: ['X', 'N', 'L', 'H'],
+  [EnvironmentalMetric.MODIFIED_INTEGRITY]: ['X', 'N', 'L', 'H'],
+  [EnvironmentalMetric.MODIFIED_AVAILABILITY]: ['X', 'N', 'L', 'H']
 };
 
 export type Metric = BaseMetric | TemporalMetric | EnvironmentalMetric;
-export type AnyMetric = BaseMetric & TemporalMetric & EnvironmentalMetric;
 export type BaseMetricValue = 'A' | 'C' | 'H' | 'L' | 'N' | 'P' | 'R' | 'U';
 export type TemporalMetricValue =
   | 'X'
@@ -126,8 +114,7 @@ export type EnvironmentalMetricValue = BaseMetricValue | 'M' | 'X';
 export type MetricValue =
   | BaseMetricValue
   | TemporalMetricValue
-  | EnvironmentalMetricValue
-  | any;
+  | EnvironmentalMetricValue;
 export type MetricValues<
   M extends Metric = Metric,
   V extends MetricValue = MetricValue

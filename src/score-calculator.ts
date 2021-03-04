@@ -1,5 +1,4 @@
 import {
-  AnyMetric,
   BaseMetric,
   BaseMetricValue,
   EnvironmentalMetric,
@@ -7,7 +6,6 @@ import {
   EnvironmentalMetricValue,
   Metric,
   MetricValue,
-  metricsIndex,
   TemporalMetric,
   temporalMetricMap,
   TemporalMetricValue
@@ -33,7 +31,13 @@ const temporalMetricValueScores: Record<
   TemporalMetric,
   Partial<Record<TemporalMetricValue, number>> | null
 > = {
-  [TemporalMetric.EXPLOITABILITY]: { X: 1, U: 0.91, F: 0.97, P: 0.94, H: 1 },
+  [TemporalMetric.EXPLOIT_CODE_MATURITY]: {
+    X: 1,
+    U: 0.91,
+    F: 0.97,
+    P: 0.94,
+    H: 1
+  },
   [TemporalMetric.REMEDIATION_LEVEL]: { X: 1, O: 0.95, T: 0.96, W: 0.97, U: 1 },
   [TemporalMetric.REPORT_CONFIDENCE]: { X: 1, U: 0.92, R: 0.96, C: 1 }
 };
@@ -42,19 +46,6 @@ const environmentalMetricValueScores: Record<
   EnvironmentalMetric,
   Partial<Record<EnvironmentalMetricValue, number>> | null
 > = {
-  [EnvironmentalMetric.ATTACK_VECTOR]:
-    baseMetricValueScores[BaseMetric.ATTACK_VECTOR],
-  [EnvironmentalMetric.ATTACK_COMPLEXITY]:
-    baseMetricValueScores[BaseMetric.ATTACK_COMPLEXITY],
-  [EnvironmentalMetric.PRIVILEGES_REQUIRED]: null, // scope-dependent: see getPrivilegesRequiredNumericValue()
-  [EnvironmentalMetric.USER_INTERACTION]:
-    baseMetricValueScores[BaseMetric.USER_INTERACTION],
-  [EnvironmentalMetric.SCOPE]: baseMetricValueScores[BaseMetric.SCOPE],
-  [EnvironmentalMetric.CONFIDENTIALITY]:
-    baseMetricValueScores[BaseMetric.CONFIDENTIALITY],
-  [EnvironmentalMetric.INTEGRITY]: baseMetricValueScores[BaseMetric.INTEGRITY],
-  [EnvironmentalMetric.AVAILABILITY]:
-    baseMetricValueScores[BaseMetric.AVAILABILITY],
   [EnvironmentalMetric.CONFIDENTIALITY_REQUIREMENT]: {
     M: 1,
     L: 0.5,
@@ -62,7 +53,26 @@ const environmentalMetricValueScores: Record<
     X: 1
   },
   [EnvironmentalMetric.INTEGRITY_REQUIREMENT]: { M: 1, L: 0.5, H: 1.5, X: 1 },
-  [EnvironmentalMetric.AVAILABILITY_REQUIREMENT]: { M: 1, L: 0.5, H: 1.5, X: 1 }
+  [EnvironmentalMetric.AVAILABILITY_REQUIREMENT]: {
+    M: 1,
+    L: 0.5,
+    H: 1.5,
+    X: 1
+  },
+  [EnvironmentalMetric.MODIFIED_ATTACK_VECTOR]:
+    baseMetricValueScores[BaseMetric.ATTACK_VECTOR],
+  [EnvironmentalMetric.MODIFIED_ATTACK_COMPLEXITY]:
+    baseMetricValueScores[BaseMetric.ATTACK_COMPLEXITY],
+  [EnvironmentalMetric.MODIFIED_PRIVILEGES_REQUIRED]: null, // scope-dependent: see getPrivilegesRequiredNumericValue()
+  [EnvironmentalMetric.MODIFIED_USER_INTERACTION]:
+    baseMetricValueScores[BaseMetric.USER_INTERACTION],
+  [EnvironmentalMetric.MODIFIED_SCOPE]: baseMetricValueScores[BaseMetric.SCOPE],
+  [EnvironmentalMetric.MODIFIED_CONFIDENTIALITY]:
+    baseMetricValueScores[BaseMetric.CONFIDENTIALITY],
+  [EnvironmentalMetric.MODIFIED_INTEGRITY]:
+    baseMetricValueScores[BaseMetric.INTEGRITY],
+  [EnvironmentalMetric.MODIFIED_AVAILABILITY]:
+    baseMetricValueScores[BaseMetric.AVAILABILITY]
 };
 
 const getPrivilegesRequiredNumericValue = (
@@ -100,18 +110,24 @@ const getMetricNumericValue = (
   metric: Metric,
   metricsMap: Map<Metric, MetricValue>
 ): number => {
-  const value = getMetricValue(metric as AnyMetric, metricsMap);
+  const value = getMetricValue(
+    (metric as BaseMetric) || TemporalMetric || EnvironmentalMetric,
+    metricsMap
+  );
 
   if (metric === BaseMetric.PRIVILEGES_REQUIRED) {
     return getPrivilegesRequiredNumericValue(
       value,
-      getMetricValue(BaseMetric.SCOPE as AnyMetric, metricsMap)
+      getMetricValue(BaseMetric.SCOPE as BaseMetric, metricsMap)
     );
   }
-  if (metric === EnvironmentalMetric.PRIVILEGES_REQUIRED) {
+  if (metric === EnvironmentalMetric.MODIFIED_PRIVILEGES_REQUIRED) {
     return getPrivilegesRequiredNumericValue(
       value,
-      getMetricValue(EnvironmentalMetric.SCOPE as AnyMetric, metricsMap)
+      getMetricValue(
+        EnvironmentalMetric.MODIFIED_SCOPE as EnvironmentalMetric,
+        metricsMap
+      )
     );
   }
 
@@ -151,7 +167,7 @@ export const calculateMiss = (metricsMap: Map<Metric, MetricValue>): number => {
     metricsMap
   );
   const mConfidentiality = getMetricNumericValue(
-    EnvironmentalMetric.CONFIDENTIALITY,
+    EnvironmentalMetric.MODIFIED_CONFIDENTIALITY,
     metricsMap
   );
 
@@ -160,7 +176,7 @@ export const calculateMiss = (metricsMap: Map<Metric, MetricValue>): number => {
     metricsMap
   );
   const mIntegrity = getMetricNumericValue(
-    EnvironmentalMetric.INTEGRITY,
+    EnvironmentalMetric.MODIFIED_INTEGRITY,
     metricsMap
   );
 
@@ -169,7 +185,7 @@ export const calculateMiss = (metricsMap: Map<Metric, MetricValue>): number => {
     metricsMap
   );
   const mAvailability = getMetricNumericValue(
-    EnvironmentalMetric.AVAILABILITY,
+    EnvironmentalMetric.MODIFIED_AVAILABILITY,
     metricsMap
   );
 
@@ -185,7 +201,7 @@ export const calculateMiss = (metricsMap: Map<Metric, MetricValue>): number => {
 // https://www.first.org/cvss/v3.1/specification-document#7-1-Base-Metrics-Equations
 // Impact =
 //   If Scope is Unchanged 	6.42 × ISS
-//   If Scope is Changed 	7.52 × (ISS - 0.029) - 3.25 × (ISS - 0.02)
+//   If Scope is Changed 	7.52 × (ISS - 0.029) - 3.25 × (ISS - 0.02)^15
 export const calculateImpact = (
   metricsMap: Map<Metric, MetricValue>,
   iss: number
@@ -197,7 +213,7 @@ export const calculateImpact = (
 // https://www.first.org/cvss/v3.1/specification-document#7-3-Environmental-Metrics-Equations
 // ModifiedImpact =
 // If ModifiedScope is Unchanged	6.42 × MISS
-// If ModifiedScope is Changed	7.52 × (MISS - 0.029) - 3.25 × (MISS × 0.9731 - 0.02)13
+// If ModifiedScope is Changed	7.52 × (MISS - 0.029) - 3.25 × (MISS × 0.9731 - 0.02)^13
 // ModifiedExploitability =	8.22 × ModifiedAttackVector × ModifiedAttackComplexity × ModifiedPrivilegesRequired × ModifiedUserInteraction
 // Note : Math.pow is 15 in 3.0 but 13 in 3.1
 export const calculateMImpact = (
@@ -205,7 +221,7 @@ export const calculateMImpact = (
   miss: number,
   versionStr: string | null
 ): number =>
-  metricsMap.get(EnvironmentalMetric.SCOPE) === 'U'
+  metricsMap.get(EnvironmentalMetric.MODIFIED_SCOPE) === 'U'
     ? 6.42 * miss
     : 7.52 * (miss - 0.029) -
       3.25 * Math.pow(miss * 0.9731 - 0.02, versionStr === '3.0' ? 15 : 13);
@@ -227,10 +243,22 @@ export const calculateMExploitability = (
   metricsMap: Map<Metric, MetricValue>
 ): number =>
   8.22 *
-  getMetricNumericValue(EnvironmentalMetric.ATTACK_VECTOR, metricsMap) *
-  getMetricNumericValue(EnvironmentalMetric.ATTACK_COMPLEXITY, metricsMap) *
-  getMetricNumericValue(EnvironmentalMetric.PRIVILEGES_REQUIRED, metricsMap) *
-  getMetricNumericValue(EnvironmentalMetric.USER_INTERACTION, metricsMap);
+  getMetricNumericValue(
+    EnvironmentalMetric.MODIFIED_ATTACK_VECTOR,
+    metricsMap
+  ) *
+  getMetricNumericValue(
+    EnvironmentalMetric.MODIFIED_ATTACK_COMPLEXITY,
+    metricsMap
+  ) *
+  getMetricNumericValue(
+    EnvironmentalMetric.MODIFIED_PRIVILEGES_REQUIRED,
+    metricsMap
+  ) *
+  getMetricNumericValue(
+    EnvironmentalMetric.MODIFIED_USER_INTERACTION,
+    metricsMap
+  );
 
 // https://www.first.org/cvss/v3.1/specification-document#Appendix-A---Floating-Point-Rounding
 const roundUp = (input: number): number => {
@@ -241,24 +269,27 @@ const roundUp = (input: number): number => {
     : (Math.floor(intInput / 10000) + 1) / 10;
 };
 
+export const modifiedMetricsMap: { [key: string]: BaseMetric } = {
+  MAV: BaseMetric.ATTACK_VECTOR,
+  MAC: BaseMetric.ATTACK_COMPLEXITY,
+  MPR: BaseMetric.PRIVILEGES_REQUIRED,
+  MUI: BaseMetric.USER_INTERACTION,
+  MS: BaseMetric.SCOPE,
+  MC: BaseMetric.CONFIDENTIALITY,
+  MI: BaseMetric.INTEGRITY,
+  MA: BaseMetric.AVAILABILITY
+};
+
 // populate temp and env metrics if not provided
 export const populateUndefinedMetrics = (
   metricsMap: Map<Metric, MetricValue>
 ): Map<Metric, MetricValue> => {
   [...temporalMetricMap, ...environmentalMetricMap].map((metric) => {
     if (![...metricsMap.keys()].includes(metric)) {
-      metricsMap.set(
-        metric,
-        metricsIndex[metric] ? metricsMap.get(metricsIndex[metric]) : 'X'
-      );
+      metricsMap.set(metric, metricsMap.get(modifiedMetricsMap[metric]) || 'X');
     }
     if (metricsMap.get(metric) === 'X') {
-      metricsMap.set(
-        metric,
-        metricsMap.get(metricsIndex[metric])
-          ? metricsMap.get(metricsIndex[metric])
-          : 'X'
-      );
+      metricsMap.set(metric, metricsMap.get(modifiedMetricsMap[metric]) || 'X');
     }
   });
 
@@ -319,7 +350,8 @@ export const calculateEnvironmentalResult = (
   const miss = calculateMiss(metricsMap);
   const impact = calculateMImpact(metricsMap, miss, versionStr);
   const exploitability = calculateMExploitability(metricsMap);
-  const scopeUnchanged = metricsMap.get(EnvironmentalMetric.SCOPE) === 'U';
+  const scopeUnchanged =
+    metricsMap.get(EnvironmentalMetric.MODIFIED_SCOPE) === 'U';
 
   const score =
     impact <= 0
@@ -327,7 +359,10 @@ export const calculateEnvironmentalResult = (
       : scopeUnchanged
       ? roundUp(
           roundUp(Math.min(impact + exploitability, 10)) *
-            getMetricNumericValue(TemporalMetric.EXPLOITABILITY, metricsMap) *
+            getMetricNumericValue(
+              TemporalMetric.EXPLOIT_CODE_MATURITY,
+              metricsMap
+            ) *
             getMetricNumericValue(
               TemporalMetric.REMEDIATION_LEVEL,
               metricsMap
@@ -336,7 +371,10 @@ export const calculateEnvironmentalResult = (
         )
       : roundUp(
           roundUp(Math.min(1.08 * (impact + exploitability), 10)) *
-            getMetricNumericValue(TemporalMetric.EXPLOITABILITY, metricsMap) *
+            getMetricNumericValue(
+              TemporalMetric.EXPLOIT_CODE_MATURITY,
+              metricsMap
+            ) *
             getMetricNumericValue(
               TemporalMetric.REMEDIATION_LEVEL,
               metricsMap
@@ -373,7 +411,7 @@ export const calculateTemporalResult = (cvssString: string): ScoreResult => {
   const tempScore = roundUp(
     score *
       getMetricNumericValue(TemporalMetric.REPORT_CONFIDENCE, metricsMap) *
-      getMetricNumericValue(TemporalMetric.EXPLOITABILITY, metricsMap) *
+      getMetricNumericValue(TemporalMetric.EXPLOIT_CODE_MATURITY, metricsMap) *
       getMetricNumericValue(TemporalMetric.REMEDIATION_LEVEL, metricsMap)
   );
 
