@@ -280,16 +280,35 @@ export const modifiedMetricsMap: { [key: string]: BaseMetric } = {
   MA: BaseMetric.AVAILABILITY
 };
 
-// populate temp and env metrics if not provided
-export const populateUndefinedMetrics = (
+// When Modified Temporal metric value is 'Not Defined' ('X'), which is the default value,
+// then Base metric value should be used.
+export const populateTemporalMetricDefaults = (
   metricsMap: Map<Metric, MetricValue>
 ): Map<Metric, MetricValue> => {
-  [...temporalMetricMap, ...environmentalMetricMap].map((metric) => {
-    if (![...metricsMap.keys()].includes(metric)) {
-      metricsMap.set(metric, metricsMap.get(modifiedMetricsMap[metric]) || 'X');
+  [...temporalMetricMap].forEach((metric) => {
+    if (!metricsMap.has(metric)) {
+      metricsMap.set(metric, 'X');
     }
+  });
+
+  return metricsMap;
+};
+
+export const populateEnvironmentalMetricDefaults = (
+  metricsMap: Map<Metric, MetricValue>
+): Map<Metric, MetricValue> => {
+  [...environmentalMetricMap].forEach((metric: EnvironmentalMetric) => {
+    if (!metricsMap.has(metric)) {
+      metricsMap.set(metric, 'X');
+    }
+
     if (metricsMap.get(metric) === 'X') {
-      metricsMap.set(metric, metricsMap.get(modifiedMetricsMap[metric]) || 'X');
+      metricsMap.set(
+        metric,
+        metricsMap.has(modifiedMetricsMap[metric])
+          ? (metricsMap.get(modifiedMetricsMap[metric]) as MetricValue)
+          : 'X'
+      );
     }
   });
 
@@ -346,7 +365,8 @@ export const calculateEnvironmentalResult = (
   const { versionStr } = validate(cvssString);
   let { metricsMap } = validate(cvssString);
 
-  metricsMap = populateUndefinedMetrics(metricsMap);
+  metricsMap = populateTemporalMetricDefaults(metricsMap);
+  metricsMap = populateEnvironmentalMetricDefaults(metricsMap);
   const miss = calculateMiss(metricsMap);
   const impact = calculateMImpact(metricsMap, miss, versionStr);
   const exploitability = calculateMExploitability(metricsMap);
