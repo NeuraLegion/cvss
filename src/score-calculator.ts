@@ -2,12 +2,12 @@ import {
   BaseMetric,
   BaseMetricValue,
   EnvironmentalMetric,
-  environmentalMetricMap,
+  environmentalMetrics,
   EnvironmentalMetricValue,
   Metric,
   MetricValue,
   TemporalMetric,
-  temporalMetricMap,
+  temporalMetrics,
   TemporalMetricValue
 } from './models';
 import { validate } from './validator';
@@ -285,7 +285,7 @@ export const modifiedMetricsMap: { [key: string]: BaseMetric } = {
 export const populateTemporalMetricDefaults = (
   metricsMap: Map<Metric, MetricValue>
 ): Map<Metric, MetricValue> => {
-  [...temporalMetricMap].forEach((metric) => {
+  [...temporalMetrics].forEach((metric) => {
     if (!metricsMap.has(metric)) {
       metricsMap.set(metric, 'X');
     }
@@ -297,7 +297,7 @@ export const populateTemporalMetricDefaults = (
 export const populateEnvironmentalMetricDefaults = (
   metricsMap: Map<Metric, MetricValue>
 ): Map<Metric, MetricValue> => {
-  [...environmentalMetricMap].forEach((metric: EnvironmentalMetric) => {
+  [...environmentalMetrics].forEach((metric: EnvironmentalMetric) => {
     if (!metricsMap.has(metric)) {
       metricsMap.set(metric, 'X');
     }
@@ -421,7 +421,7 @@ export const calculateEnvironmentalScore = (cvssString: string): number => {
 export const calculateTemporalResult = (cvssString: string): ScoreResult => {
   const { metricsMap } = validate(cvssString);
   // populate temp metrics if not provided
-  [...temporalMetricMap].map((metric) => {
+  [...temporalMetrics].map((metric) => {
     if (![...metricsMap.keys()].includes(metric)) {
       metricsMap.set(metric, 'X');
     }
