@@ -1,8 +1,16 @@
 import {
-  BaseMetric,
+  Metric,
+  MetricValue,
+  Metrics,
   baseMetrics,
-  BaseMetricValue,
-  baseMetricValues
+  temporalMetrics,
+  environmentalMetrics,
+  AllMetricValues,
+  baseMetricValues,
+  temporalMetricValues,
+  environmentalMetricValues,
+  TemporalMetric,
+  EnvironmentalMetric
 } from './models';
 import { humanizeBaseMetric, humanizeBaseMetricValue } from './humanizer';
 import { parseMetricsAsMap, parseVector, parseVersion } from './parser';
@@ -29,11 +37,20 @@ const validateVector = (vectorStr: string | null): void => {
   }
 };
 
-const checkUnknownBaseMetrics = (metricsMap: Map<string, string>): void => {
+const checkUnknownMetrics = (
+  metricsMap: Map<string, string>,
+  knownMetrics?: Metrics
+): void => {
+  const allKnownMetrics = knownMetrics || [
+    ...baseMetrics,
+    ...temporalMetrics,
+    ...environmentalMetrics
+  ];
+
   [...metricsMap.keys()].forEach((userMetric: string) => {
-    if (!baseMetrics.includes(userMetric as BaseMetric)) {
+    if (!allKnownMetrics.includes(userMetric as Metric)) {
       throw new Error(
-        `Unknown CVSS metric "${userMetric}". Allowed metrics: ${baseMetrics.join(
+        `Unknown CVSS metric "${userMetric}". Allowed metrics: ${allKnownMetrics.join(
           ', '
         )}`
       );
@@ -41,33 +58,42 @@ const checkUnknownBaseMetrics = (metricsMap: Map<string, string>): void => {
   });
 };
 
-const checkMandatoryBaseMetrics = (metricsMap: Map<string, string>): void => {
-  baseMetrics.forEach((baseMetric: BaseMetric) => {
-    if (!metricsMap.has(baseMetric)) {
+const checkMandatoryMetrics = (
+  metricsMap: Map<string, string>,
+  metrics: Metrics = baseMetrics
+): void => {
+  metrics.forEach((metric: Metric) => {
+    if (!metricsMap.has(metric)) {
       // eslint-disable-next-line max-len
       throw new Error(
-        `Missing mandatory CVSS base metric ${baseMetric} (${humanizeBaseMetric(
-          baseMetric
+        `Missing mandatory CVSS metric ${metrics} (${humanizeBaseMetric(
+          metric
         )})`
       );
     }
   });
 };
 
-const checkBaseMetricsValues = (metricsMap: Map<string, string>): void => {
-  baseMetrics.forEach((baseMetric: BaseMetric) => {
-    const userValue = metricsMap.get(baseMetric);
-    if (!baseMetricValues[baseMetric].includes(userValue as BaseMetricValue)) {
-      const allowedValuesHumanized = baseMetricValues[baseMetric]
+const checkMetricsValues = (
+  metricsMap: Map<string, string>,
+  metrics: Metrics,
+  metricsValues: AllMetricValues
+): void => {
+  metrics.forEach((metric: Metric) => {
+    const userValue = metricsMap.get(metric);
+    if (!userValue) {
+      return;
+    }
+    if (!metricsValues[metric].includes(userValue as MetricValue)) {
+      const allowedValuesHumanized = metricsValues[metric]
         .map(
-          (value: BaseMetricValue) =>
-            `${value} (${humanizeBaseMetricValue(value, baseMetric)})`
+          (value: MetricValue) =>
+            `${value} (${humanizeBaseMetricValue(value, metric)})`
         )
         .join(', ');
-      // eslint-disable-next-line max-len
       throw new Error(
-        `Invalid value for CVSS metric ${baseMetric} (${humanizeBaseMetric(
-          baseMetric
+        `Invalid value for CVSS metric ${metric} (${humanizeBaseMetric(
+          metric
         )})${
           userValue ? `: ${userValue}` : ''
         }. Allowed values: ${allowedValuesHumanized}`
@@ -76,10 +102,31 @@ const checkBaseMetricsValues = (metricsMap: Map<string, string>): void => {
   });
 };
 
-export const validate = (cvssStr: string): void => {
+type ValidationResult = {
+  isTemporal: boolean;
+  isEnvironmental: boolean;
+  metricsMap: Map<Metric, MetricValue>;
+  versionStr: string | null;
+};
+
+/**
+ * Validate that the given string is a valid cvss vector
+ * @param cvssStr
+ */
+export const validate = (cvssStr: string): ValidationResult => {
   if (!cvssStr || !cvssStr.startsWith('CVSS:')) {
     throw new Error('CVSS vector must start with "CVSS:"');
   }
+  const allKnownMetrics = [
+    ...baseMetrics,
+    ...temporalMetrics,
+    ...environmentalMetrics
+  ];
+  const allKnownMetricsValues = {
+    ...baseMetricValues,
+    ...temporalMetricValues,
+    ...environmentalMetricValues
+  };
 
   const versionStr = parseVersion(cvssStr);
   validateVersion(versionStr);
@@ -87,8 +134,22 @@ export const validate = (cvssStr: string): void => {
   const vectorStr = parseVector(cvssStr);
   validateVector(vectorStr);
 
-  const metricsMap: Map<string, string> = parseMetricsAsMap(cvssStr);
-  checkUnknownBaseMetrics(metricsMap);
-  checkMandatoryBaseMetrics(metricsMap);
-  checkBaseMetricsValues(metricsMap);
+  const metricsMap = parseMetricsAsMap(cvssStr);
+  checkMandatoryMetrics(metricsMap);
+  checkUnknownMetrics(metricsMap, allKnownMetrics);
+  checkMetricsValues(metricsMap, allKnownMetrics, allKnownMetricsValues);
+
+  const isTemporal = [...metricsMap.keys()].some((metric) =>
+    temporalMetrics.includes(metric as TemporalMetric)
+  );
+  const isEnvironmental = [...metricsMap.keys()].some((metric) =>
+    environmentalMetrics.includes(metric as EnvironmentalMetric)
+  );
+
+  return {
+    metricsMap,
+    isTemporal,
+    isEnvironmental,
+    versionStr
+  };
 };

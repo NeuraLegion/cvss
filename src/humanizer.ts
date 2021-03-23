@@ -1,7 +1,7 @@
-import { BaseMetric, BaseMetricValue } from './models';
+import { BaseMetric, Metric, MetricValue } from './models';
 
-export const humanizeBaseMetric = (baseMetric: BaseMetric): string => {
-  switch (baseMetric) {
+export const humanizeBaseMetric = (metric: Metric): string => {
+  switch (metric) {
     case BaseMetric.ATTACK_VECTOR:
       return 'Attack Vector';
     case BaseMetric.ATTACK_COMPLEXITY:
@@ -25,8 +25,8 @@ export const humanizeBaseMetric = (baseMetric: BaseMetric): string => {
 
 // eslint-disable-next-line complexity
 export const humanizeBaseMetricValue = (
-  value: BaseMetricValue,
-  metric: BaseMetric
+  value: MetricValue,
+  metric: Metric
 ): string => {
   switch (value) {
     case 'A':
