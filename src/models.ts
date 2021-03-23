@@ -29,6 +29,20 @@ export enum EnvironmentalMetric {
   MODIFIED_AVAILABILITY = 'MA'
 }
 
+export type Metric = BaseMetric | TemporalMetric | EnvironmentalMetric;
+export type BaseMetricValue = 'A' | 'C' | 'H' | 'L' | 'N' | 'P' | 'R' | 'U';
+export type TemporalMetricValue =
+  | 'X'
+  | 'F'
+  | 'H'
+  | 'O'
+  | 'T'
+  | 'W'
+  | 'U'
+  | 'P'
+  | 'C'
+  | 'R';
+
 export const baseMetrics: ReadonlyArray<BaseMetric> = [
   BaseMetric.ATTACK_VECTOR,
   BaseMetric.ATTACK_COMPLEXITY,
@@ -39,6 +53,17 @@ export const baseMetrics: ReadonlyArray<BaseMetric> = [
   BaseMetric.INTEGRITY,
   BaseMetric.AVAILABILITY
 ];
+
+export type EnvironmentalMetricValue = BaseMetricValue | 'M' | 'X';
+export type MetricValue =
+  | BaseMetricValue
+  | TemporalMetricValue
+  | EnvironmentalMetricValue;
+export type MetricValues<
+  M extends Metric = Metric,
+  V extends MetricValue = MetricValue
+> = Record<M, V[]>;
+export type Metrics<M = Metric> = ReadonlyArray<M>;
 
 export const temporalMetrics: Metrics<TemporalMetric> = [
   TemporalMetric.EXPLOIT_CODE_MATURITY,
@@ -97,29 +122,6 @@ export const environmentalMetricValues: MetricValues<
   [EnvironmentalMetric.MODIFIED_AVAILABILITY]: ['X', 'N', 'L', 'H']
 };
 
-export type Metric = BaseMetric | TemporalMetric | EnvironmentalMetric;
-export type BaseMetricValue = 'A' | 'C' | 'H' | 'L' | 'N' | 'P' | 'R' | 'U';
-export type TemporalMetricValue =
-  | 'X'
-  | 'F'
-  | 'H'
-  | 'O'
-  | 'T'
-  | 'W'
-  | 'U'
-  | 'P'
-  | 'C'
-  | 'R';
-export type EnvironmentalMetricValue = BaseMetricValue | 'M' | 'X';
-export type MetricValue =
-  | BaseMetricValue
-  | TemporalMetricValue
-  | EnvironmentalMetricValue;
-export type MetricValues<
-  M extends Metric = Metric,
-  V extends MetricValue = MetricValue
-> = Record<M, V[]>;
-export type Metrics<M = Metric> = ReadonlyArray<M>;
 export type AllMetricValues =
   | typeof baseMetricValues
   | typeof temporalMetricValues

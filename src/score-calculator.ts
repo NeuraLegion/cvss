@@ -362,13 +362,13 @@ export const calculateBaseScore = (cvssString: string): number => {
 export const calculateEnvironmentalResult = (
   cvssString: string
 ): ScoreResult => {
-  const { versionStr } = validate(cvssString);
-  let { metricsMap } = validate(cvssString);
+  const result = validate(cvssString);
+  let { metricsMap } = result;
 
   metricsMap = populateTemporalMetricDefaults(metricsMap);
   metricsMap = populateEnvironmentalMetricDefaults(metricsMap);
   const miss = calculateMiss(metricsMap);
-  const impact = calculateMImpact(metricsMap, miss, versionStr);
+  const impact = calculateMImpact(metricsMap, miss, result.versionStr);
   const exploitability = calculateMExploitability(metricsMap);
   const scopeUnchanged =
     metricsMap.get(EnvironmentalMetric.MODIFIED_SCOPE) === 'U';
@@ -421,7 +421,7 @@ export const calculateEnvironmentalScore = (cvssString: string): number => {
 export const calculateTemporalResult = (cvssString: string): ScoreResult => {
   const { metricsMap } = validate(cvssString);
   // populate temp metrics if not provided
-  [...temporalMetrics].map((metric) => {
+  [...temporalMetrics].forEach((metric) => {
     if (![...metricsMap.keys()].includes(metric)) {
       metricsMap.set(metric, 'X');
     }
