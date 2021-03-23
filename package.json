@@ -10,6 +10,14 @@
     "name": "Viachaslau Tyshkavets",
     "email": "viachaslau.tyshkavets@neuralegion.com"
   },
+  "keywords": [
+    "security",
+    "typescript",
+    "score",
+    "cvss",
+    "cvssv3",
+    "cvss3"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/NeuraLegion/cvss/issues"
