@@ -12,8 +12,11 @@ const cvssTests = {
   'CVSS:3.0/AV:L/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:N': [0.0, 0.0, 0.0],
   'CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H': [7.8, 7.8, 7.8], // https://www.first.org/cvss/user-guide#3-1-CVSS-Scoring-in-the-Exploit-Life-Cycle
   'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N': [7.5, 7.5, 7.5], // https://www.first.org/cvss/user-guide#3-1-CVSS-Scoring-in-the-Exploit-Life-Cycle
-  'CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N': [6.4, 6.4, 6.4], // https://www.first.org/cvss/user-guide#3-6-Vulnerable-Components-Protected-by-a-Firewall
+  'CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N': [6.4, 6.4, 6.4], // https://www.first.org/cvss/v3.0/examples#2-4-CVSS-v3-0-Base-Score-6-4
   'CVSS:3.1/S:C/C:L/I:L/A:N/AV:N/AC:L/PR:L/UI:N': [6.4, 6.4, 6.4], // non-normalized order
+  'CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N': [6.4, 6.4, 6.4],
+  'CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N': [6.1, 6.1, 6.1], // https://www.first.org/cvss/v3.0/examples#1-4-CVSS-v3-0-Base-Score-6-1
+  'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N': [6.1, 6.1, 6.1],
   'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N': [8.6, 8.6, 8.6],
   'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H': [10.0, 10.0, 10.0],
   'CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:N': [0.0, 0.0, 0.0],
@@ -86,7 +89,17 @@ const cvssTests = {
     3.5,
     6.1
   ],
-  'CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N/RL:O/CR:L': [8.6, 8.2, 6.0]
+  'CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N/RL:O/CR:L': [8.6, 8.2, 6.0],
+  'CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N/E:P/RL:W/RC:R/CR:H/IR:M/AR:M/MAV:N/MAC:H/MPR:L/MUI:R/MS:C/MC:L/MI:H/MA:L': [
+    7.7,
+    6.8,
+    6.5
+  ],
+  'CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N/E:P/RL:W/RC:R/CR:H/IR:M/AR:M/MAV:N/MAC:H/MPR:L/MUI:R/MS:C/MC:L/MI:H/MA:L': [
+    7.7,
+    6.8,
+    6.5
+  ]
 };
 
 describe('Calculator', () => {
