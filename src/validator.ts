@@ -1,16 +1,16 @@
 import {
+  BaseMetric,
+  EnvironmentalMetric,
   Metric,
   MetricValue,
   Metrics,
-  baseMetrics,
-  temporalMetrics,
-  environmentalMetrics,
-  AllMetricValues,
-  baseMetricValues,
-  temporalMetricValues,
-  environmentalMetricValues,
   TemporalMetric,
-  EnvironmentalMetric
+  baseMetricValues,
+  baseMetrics,
+  environmentalMetricValues,
+  environmentalMetrics,
+  temporalMetricValues,
+  temporalMetrics
 } from './models';
 import { humanizeBaseMetric, humanizeBaseMetricValue } from './humanizer';
 import { parseMetricsAsMap, parseVector, parseVersion } from './parser';
@@ -60,7 +60,7 @@ const checkUnknownMetrics = (
 
 const checkMandatoryMetrics = (
   metricsMap: Map<string, string>,
-  metrics: Metrics = baseMetrics
+  metrics: ReadonlyArray<BaseMetric> = baseMetrics
 ): void => {
   metrics.forEach((metric: Metric) => {
     if (!metricsMap.has(metric)) {
@@ -77,7 +77,7 @@ const checkMandatoryMetrics = (
 const checkMetricsValues = (
   metricsMap: Map<string, string>,
   metrics: Metrics,
-  metricsValues: AllMetricValues
+  metricsValues: Record<Metric, MetricValue[]>
 ): void => {
   metrics.forEach((metric: Metric) => {
     const userValue = metricsMap.get(metric);

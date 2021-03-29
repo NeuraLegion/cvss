@@ -30,6 +30,7 @@ export enum EnvironmentalMetric {
 }
 
 export type Metric = BaseMetric | TemporalMetric | EnvironmentalMetric;
+export type Metrics = ReadonlyArray<Metric>;
 export type BaseMetricValue = 'A' | 'C' | 'H' | 'L' | 'N' | 'P' | 'R' | 'U';
 export type TemporalMetricValue =
   | 'X'
@@ -42,6 +43,15 @@ export type TemporalMetricValue =
   | 'P'
   | 'C'
   | 'R';
+export type EnvironmentalMetricValue = BaseMetricValue | 'M' | 'X';
+export type MetricValue =
+  | BaseMetricValue
+  | TemporalMetricValue
+  | EnvironmentalMetricValue;
+export type MetricValues<
+  M extends Metric = Metric,
+  V extends MetricValue = MetricValue
+> = Record<M, V[]>;
 
 export const baseMetrics: ReadonlyArray<BaseMetric> = [
   BaseMetric.ATTACK_VECTOR,
@@ -54,24 +64,13 @@ export const baseMetrics: ReadonlyArray<BaseMetric> = [
   BaseMetric.AVAILABILITY
 ];
 
-export type EnvironmentalMetricValue = BaseMetricValue | 'M' | 'X';
-export type MetricValue =
-  | BaseMetricValue
-  | TemporalMetricValue
-  | EnvironmentalMetricValue;
-export type MetricValues<
-  M extends Metric = Metric,
-  V extends MetricValue = MetricValue
-> = Record<M, V[]>;
-export type Metrics<M = Metric> = ReadonlyArray<M>;
-
-export const temporalMetrics: Metrics<TemporalMetric> = [
+export const temporalMetrics: ReadonlyArray<TemporalMetric> = [
   TemporalMetric.EXPLOIT_CODE_MATURITY,
   TemporalMetric.REMEDIATION_LEVEL,
   TemporalMetric.REPORT_CONFIDENCE
 ];
 
-export const environmentalMetrics: Metrics<EnvironmentalMetric> = [
+export const environmentalMetrics: ReadonlyArray<EnvironmentalMetric> = [
   EnvironmentalMetric.AVAILABILITY_REQUIREMENT,
   EnvironmentalMetric.CONFIDENTIALITY_REQUIREMENT,
   EnvironmentalMetric.INTEGRITY_REQUIREMENT,
@@ -121,8 +120,3 @@ export const environmentalMetricValues: MetricValues<
   [EnvironmentalMetric.MODIFIED_INTEGRITY]: ['X', 'N', 'L', 'H'],
   [EnvironmentalMetric.MODIFIED_AVAILABILITY]: ['X', 'N', 'L', 'H']
 };
-
-export type AllMetricValues =
-  | typeof baseMetricValues
-  | typeof temporalMetricValues
-  | typeof environmentalMetricValues;
