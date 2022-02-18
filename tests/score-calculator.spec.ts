@@ -99,6 +99,18 @@ const cvssTests = {
     7.7,
     6.8,
     6.5
+  ],
+  'CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H': [9.6, 9.6, 9.6],
+  'CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H/MAV:A/MAC:L/MPR:N/MUI:N/MS:C/MC:H/MI:H/MA:H': [
+    9.6,
+    9.6,
+    9.6
+  ],
+  'CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H': [9.6, 9.6, 9.7],
+  'CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H/MAV:A/MAC:L/MPR:N/MUI:N/MS:C/MC:H/MI:H/MA:H': [
+    9.6,
+    9.6,
+    9.7
   ]
 };
 
