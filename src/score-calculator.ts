@@ -224,7 +224,11 @@ export const calculateModifiedImpact = (
   metricsMap.get(EnvironmentalMetric.MODIFIED_SCOPE) === 'U'
     ? 6.42 * miss
     : 7.52 * (miss - 0.029) -
-      3.25 * Math.pow(miss * 0.9731 - 0.02, versionStr === '3.0' ? 15 : 13);
+      3.25 *
+        Math.pow(
+          miss * (versionStr === '3.0' ? 1 : 0.9731) - 0.02,
+          versionStr === '3.0' ? 15 : 13
+        );
 
 // https://www.first.org/cvss/v3.1/specification-document#7-1-Base-Metrics-Equations
 // Exploitability = 8.22 × AttackVector × AttackComplexity × PrivilegesRequired × UserInteraction
@@ -368,6 +372,7 @@ export const calculateEnvironmentalResult = (
 
   metricsMap = populateTemporalMetricDefaults(metricsMap);
   metricsMap = populateEnvironmentalMetricDefaults(metricsMap);
+
   const miss = calculateMiss(metricsMap);
   const impact = calculateModifiedImpact(metricsMap, miss, versionStr);
   const exploitability = calculateModifiedExploitability(metricsMap);
