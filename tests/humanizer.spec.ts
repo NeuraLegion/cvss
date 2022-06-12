@@ -14,7 +14,7 @@ describe('humanizer', () => {
   });
 
   it('should produce "Unknown" for unknown metric', () => {
-    const result = humanizeBaseMetric(('X' as unknown) as BaseMetric);
+    const result = humanizeBaseMetric('X' as unknown as BaseMetric);
     expect(result).to.equal('Unknown');
   });
 
@@ -40,7 +40,7 @@ describe('humanizer', () => {
 
   it('should produce "Unknown" for unknown value of existing metric', () => {
     const result = humanizeBaseMetricValue(
-      ('X' as unknown) as BaseMetricValue,
+      'X' as unknown as BaseMetricValue,
       BaseMetric.SCOPE
     );
     expect(result).to.equal('Unknown');
@@ -48,8 +48,8 @@ describe('humanizer', () => {
 
   it('should produce "Unknown" for unknown value of unknown metric', () => {
     const result = humanizeBaseMetricValue(
-      ('X' as unknown) as BaseMetricValue,
-      ('X' as unknown) as BaseMetric
+      'X' as unknown as BaseMetricValue,
+      'X' as unknown as BaseMetric
     );
     expect(result).to.equal('Unknown');
   });
