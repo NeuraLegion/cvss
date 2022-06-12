@@ -2,8 +2,7 @@ name: Semantic release
 
 on:
   push:
-    branches:
-      - master
+    branches: [ main ] 
 
 jobs:
   release:
