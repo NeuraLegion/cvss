@@ -61,7 +61,7 @@ Throws an Error if given CVSS string is either invalid or unsupported.
 Error contains verbose message with error details. Sample error messages:
 
 - CVSS vector must start with "CVSS:"
-- Invalid CVSS string. Example: CVSS:3.0/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L
+- Invalid CVSS string. Example: CVSS:2.0/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L
 - Unsupported CVSS version: 2.0. Only 3.0 and 3.1 are supported
 - Duplicated metric: "AC:L"
 - Missing mandatory CVSS base metric C (Confidentiality)
@@ -90,7 +90,7 @@ Return un-abbreviated metric value: e.g. 'Network' for input ('AV', 'N')
 ```
 import { calculateBaseScore } from '@neuralegion/cvss';
 
-console.log('score: ', calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
+console.log('score: ', calculateBaseScore('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
 ```
 
 </details>
@@ -101,7 +101,7 @@ console.log('score: ', calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/
 ```
 const cvss = require('@neuralegion/cvss');
 
-console.log(cvss.calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
+console.log(cvss.calculateBaseScore('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
 ```
 
 </details>
@@ -115,7 +115,7 @@ console.log(cvss.calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:
 ```
 import cvss from '@neuralegion/cvss';
 
-console.log(cvss.calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
+console.log(cvss.calculateBaseScore('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
 ```
 
 Running: `node --experimental-modules ./usage.mjs`
@@ -128,19 +128,19 @@ Running: `node --experimental-modules ./usage.mjs`
 ```
 <script src="./node_modules/@neuralegion/cvss/dist/bundle.umd.js"></script>
 <script>
-  alert(`Score: ${cvss.calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N')}`);
+  alert(`Score: ${cvss.calculateBaseScore('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N')}`);
 </script>
 ```
 
 </details>
 
 <details>
-<summary>Browser (ES modules)</summary>
+<summary>Browser (ES modules)</summary>) 
 
 ```
 <script type="module">
   import { calculateBaseScore } from './node_modules/@neuralegion/cvss/dist/bundle.es.js';
-  alert(`Score: ${calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N')}`);
+  alert(`Score: ${calculateBaseScore('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N')}`);
 </script>
 ```
 
