@@ -338,9 +338,14 @@ export const populateEnvironmentalMetricDefaults = (
 
 export class CvssV3Calculator implements CvssCalculator {
   public calculate(cvssString: string): CvssResultV3 {
-    const baseResult = this.calculateBaseScore(cvssString);
-    const temporalResult = this.calculateTemporalScore(cvssString, baseResult);
-    const environmentalResult = this.calculateEnvironmentalScore(cvssString);
+    const { metricsMap, versionStr } = validate(cvssString);
+
+    const baseResult = this.calculateBaseScore(metricsMap, versionStr!);
+    const temporalResult = this.calculateTemporalScore(baseResult);
+    const environmentalResult = this.calculateEnvironmentalScore(
+      metricsMap,
+      versionStr!
+    );
 
     return {
       ...baseResult,
@@ -352,9 +357,10 @@ export class CvssV3Calculator implements CvssCalculator {
   /**
    * Calculate the base score for a CVSS v3.x string
    */
-  private calculateBaseScore(cvssString: string): CvssResultV3 {
-    const { metricsMap, versionStr } = validate(cvssString);
-
+  private calculateBaseScore(
+    metricsMap: Map<Metric, MetricValue>,
+    versionStr: string
+  ): CvssResultV3 {
     const iss = calculateIss(metricsMap);
     const impact = calculateImpact(metricsMap, iss);
     const exploitability = calculateExploitability(metricsMap);
@@ -372,7 +378,7 @@ export class CvssV3Calculator implements CvssCalculator {
       baseScore,
       baseImpact: impact <= 0 ? 0 : roundUp(impact),
       baseExploitability: impact <= 0 ? 0 : roundUp(exploitability),
-      metrics: metricsMap as Map<string, string>
+      metrics: metricsMap
     };
   }
 
@@ -380,12 +386,12 @@ export class CvssV3Calculator implements CvssCalculator {
    * Calculate the temporal score for a CVSS v3.x string
    */
   private calculateTemporalScore(
-    cvssString: string,
     baseResult: CvssResultV3
   ): Pick<CvssResultV3, 'temporalScore'> {
-    let { metricsMap } = validate(cvssString);
-    // populate temp metrics if not provided
-    metricsMap = populateTemporalMetricDefaults(metricsMap);
+    // populate temp metrics
+    const metricsMap = populateTemporalMetricDefaults(
+      baseResult.metrics as Map<Metric, MetricValue>
+    );
 
     const temporalScore = roundUp(
       baseResult.baseScore *
@@ -406,15 +412,12 @@ export class CvssV3Calculator implements CvssCalculator {
    * Calculate the environmental score for a CVSS v3.x string
    */
   private calculateEnvironmentalScore(
-    cvssString: string
+    metricsMap: Map<Metric, MetricValue>,
+    versionStr: string
   ): Pick<
     CvssResultV3,
     'environmentalScore' | 'environmentalImpact' | 'environmentalExploitability'
   > {
-    const validationResult = validate(cvssString);
-    const { versionStr } = validationResult;
-    let { metricsMap } = validationResult;
-
     metricsMap = populateTemporalMetricDefaults(metricsMap);
     metricsMap = populateEnvironmentalMetricDefaults(metricsMap);
 
