@@ -107,12 +107,46 @@ export const calculateEnvironmentalResult = (
 // Re-exports for backward compatibility
 // ============================================================================
 
-export * from './versions/v3/humanizer';
-export * from './versions/v3/models';
 export {
+  calculateIss,
+  calculateMiss,
+  calculateExploitability,
+  calculateModifiedExploitability,
+  calculateImpact,
+  calculateModifiedImpact,
+  modifiedMetricsMap,
+  populateTemporalMetricDefaults,
+  populateEnvironmentalMetricDefaults,
+  roundUp
+} from './versions/v3/calculator';
+export {
+  humanizeBaseMetric,
+  humanizeBaseMetricValue,
+  humanizeScore
+} from './versions/v3/humanizer';
+export {
+  BaseMetric,
+  TemporalMetric,
+  EnvironmentalMetric,
+  type Metric,
+  type Metrics,
+  type BaseMetricValue,
+  type TemporalMetricValue,
+  type EnvironmentalMetricValue,
+  type MetricValue,
+  type MetricValues,
+  baseMetrics,
+  temporalMetrics,
+  environmentalMetrics,
+  baseMetricValues,
+  temporalMetricValues,
+  environmentalMetricValues
+} from './versions/v3/models';
+export {
+  type KeyValue,
   parseVector,
   parseVersion,
   parseMetrics,
   parseMetricsAsMap
 } from './versions/v3/parser';
-export { validate } from './versions/v3/validator';
+export { validateVersion, validate } from './versions/v3/validator';

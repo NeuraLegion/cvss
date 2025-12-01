@@ -147,7 +147,7 @@ const getMetricNumericValue = (
 };
 
 // ISS = 1 - [ (1 - Confidentiality) × (1 - Integrity) × (1 - Availability) ]
-const calculateIss = (metricsMap: Map<Metric, MetricValue>): number => {
+export const calculateIss = (metricsMap: Map<Metric, MetricValue>): number => {
   const confidentiality = getMetricNumericValue(
     BaseMetric.CONFIDENTIALITY,
     metricsMap
@@ -163,7 +163,7 @@ const calculateIss = (metricsMap: Map<Metric, MetricValue>): number => {
 
 // https://www.first.org/cvss/v3.1/specification-document#7-3-Environmental-Metrics-Equations
 // MISS = Minimum ( 1 - [ (1 - ConfidentialityRequirement × ModifiedConfidentiality) × (1 - IntegrityRequirement × ModifiedIntegrity) × (1 - AvailabilityRequirement × ModifiedAvailability) ], 0.915)
-const calculateMiss = (metricsMap: Map<Metric, MetricValue>): number => {
+export const calculateMiss = (metricsMap: Map<Metric, MetricValue>): number => {
   const rConfidentiality = getMetricNumericValue(
     EnvironmentalMetric.CONFIDENTIALITY_REQUIREMENT,
     metricsMap
@@ -204,7 +204,7 @@ const calculateMiss = (metricsMap: Map<Metric, MetricValue>): number => {
 // Impact =
 //   If Scope is Unchanged 	6.42 × ISS
 //   If Scope is Changed 	7.52 × (ISS - 0.029) - 3.25 × (ISS - 0.02)^15
-const calculateImpact = (
+export const calculateImpact = (
   metricsMap: Map<Metric, MetricValue>,
   iss: number
 ): number =>
@@ -218,7 +218,7 @@ const calculateImpact = (
 // If ModifiedScope is Changed	7.52 × (MISS - 0.029) - 3.25 × (MISS × 0.9731 - 0.02)^13
 // ModifiedExploitability =	8.22 × ModifiedAttackVector × ModifiedAttackComplexity × ModifiedPrivilegesRequired × ModifiedUserInteraction
 // Note : Math.pow is 15 in 3.0 but 13 in 3.1
-const calculateModifiedImpact = (
+export const calculateModifiedImpact = (
   metricsMap: Map<Metric, MetricValue>,
   miss: number,
   versionStr: string | null
@@ -234,7 +234,7 @@ const calculateModifiedImpact = (
 
 // https://www.first.org/cvss/v3.1/specification-document#7-1-Base-Metrics-Equations
 // Exploitability = 8.22 × AttackVector × AttackComplexity × PrivilegesRequired × UserInteraction
-const calculateExploitability = (
+export const calculateExploitability = (
   metricsMap: Map<Metric, MetricValue>
 ): number =>
   8.22 *
@@ -245,7 +245,7 @@ const calculateExploitability = (
 
 // https://www.first.org/cvss/v3.1/specification-document#7-3-Environmental-Metrics-Equations
 // Exploitability = 8.22 × ModifiedAttackVector × ModifiedAttackComplexity × ModifiedPrivilegesRequired × ModifiedUserInteraction
-const calculateModifiedExploitability = (
+export const calculateModifiedExploitability = (
   metricsMap: Map<Metric, MetricValue>
 ): number =>
   8.22 *
@@ -267,7 +267,7 @@ const calculateModifiedExploitability = (
   );
 
 // https://www.first.org/cvss/v3.1/specification-document#Appendix-A---Floating-Point-Rounding
-const roundUp = (input: number): number => {
+export const roundUp = (input: number): number => {
   const intInput = Math.round(input * 100000);
 
   return intInput % 10000 === 0
@@ -275,7 +275,7 @@ const roundUp = (input: number): number => {
     : (Math.floor(intInput / 10000) + 1) / 10;
 };
 
-const modifiedMetricsMap: { [key: string]: BaseMetric } = {
+export const modifiedMetricsMap: { [key: string]: BaseMetric } = {
   MAV: BaseMetric.ATTACK_VECTOR,
   MAC: BaseMetric.ATTACK_COMPLEXITY,
   MPR: BaseMetric.PRIVILEGES_REQUIRED,
@@ -288,7 +288,7 @@ const modifiedMetricsMap: { [key: string]: BaseMetric } = {
 
 // When Modified Temporal metric value is 'Not Defined' ('X'), which is the default value,
 // then Base metric value should be used.
-const populateTemporalMetricDefaults = (
+export const populateTemporalMetricDefaults = (
   metricsMap: Map<Metric, MetricValue>
 ): Map<Metric, MetricValue> => {
   [...temporalMetrics].forEach((metric) => {
@@ -300,7 +300,7 @@ const populateTemporalMetricDefaults = (
   return metricsMap;
 };
 
-const populateEnvironmentalMetricDefaults = (
+export const populateEnvironmentalMetricDefaults = (
   metricsMap: Map<Metric, MetricValue>
 ): Map<Metric, MetricValue> => {
   [...environmentalMetrics].forEach((metric: EnvironmentalMetric) => {
