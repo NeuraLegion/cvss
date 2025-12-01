@@ -212,25 +212,40 @@ export const calculateImpact = (
     ? 6.42 * iss
     : 7.52 * (iss - 0.029) - 3.25 * Math.pow(iss - 0.02, 15);
 
+// https://www.first.org/cvss/v3-0/specification-document#8-1-Base
+// ModifiedImpact =
+// If ModifiedScope is Unchanged	6.42 × MISS
+// If ModifiedScope is Changed	7.52 × (MISS - 0.029) - 3.25 × (MISS - 0.02)^15
+// ModifiedExploitability =	8.22 × ModifiedAttackVector × ModifiedAttackComplexity × ModifiedPrivilegesRequired × ModifiedUserInteraction
+const calculateModifiedImpactV3 = (
+  metricsMap: Map<Metric, MetricValue>,
+  miss: number
+): number =>
+  metricsMap.get(EnvironmentalMetric.MODIFIED_SCOPE) === 'U'
+    ? 6.42 * miss
+    : 7.52 * (miss - 0.029) - 3.25 * Math.pow(miss * 1 - 0.02, 15);
+
 // https://www.first.org/cvss/v3.1/specification-document#7-3-Environmental-Metrics-Equations
 // ModifiedImpact =
 // If ModifiedScope is Unchanged	6.42 × MISS
 // If ModifiedScope is Changed	7.52 × (MISS - 0.029) - 3.25 × (MISS × 0.9731 - 0.02)^13
 // ModifiedExploitability =	8.22 × ModifiedAttackVector × ModifiedAttackComplexity × ModifiedPrivilegesRequired × ModifiedUserInteraction
-// Note : Math.pow is 15 in 3.0 but 13 in 3.1
+const calculateModifiedImpactV31 = (
+  metricsMap: Map<Metric, MetricValue>,
+  miss: number
+): number =>
+  metricsMap.get(EnvironmentalMetric.MODIFIED_SCOPE) === 'U'
+    ? 6.42 * miss
+    : 7.52 * (miss - 0.029) - 3.25 * Math.pow(miss * 0.9731 - 0.02, 13);
+
 export const calculateModifiedImpact = (
   metricsMap: Map<Metric, MetricValue>,
   miss: number,
   versionStr: string | null
 ): number =>
-  metricsMap.get(EnvironmentalMetric.MODIFIED_SCOPE) === 'U'
-    ? 6.42 * miss
-    : 7.52 * (miss - 0.029) -
-      3.25 *
-        Math.pow(
-          miss * (versionStr === '3.0' ? 1 : 0.9731) - 0.02,
-          versionStr === '3.0' ? 15 : 13
-        );
+  versionStr === '3.0'
+    ? calculateModifiedImpactV3(metricsMap, miss)
+    : calculateModifiedImpactV31(metricsMap, miss);
 
 // https://www.first.org/cvss/v3.1/specification-document#7-1-Base-Metrics-Equations
 // Exploitability = 8.22 × AttackVector × AttackComplexity × PrivilegesRequired × UserInteraction
