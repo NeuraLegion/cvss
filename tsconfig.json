@@ -4,7 +4,9 @@
     "outDir": "dist",
     "declarationDir": "dist",
     "target": "es2018",
-    "lib": ["es2018"],
+    "lib": [
+      "es2018"
+    ],
     "module": "ES2015",
     "esModuleInterop": true,
     "resolveJsonModule": false,
@@ -18,18 +20,26 @@
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "typeRoots": ["node_modules/@types", "@types"],
+    "typeRoots": [
+      "node_modules/@types",
+      "@types"
+    ],
     "skipLibCheck": true,
     "newLine": "LF",
     "declaration": true,
     "inlineSources": false,
     "inlineSourceMap": false
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests"
+  ]
 }
