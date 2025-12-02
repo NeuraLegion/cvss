@@ -42,7 +42,7 @@ describe('validator v2', () => {
 
   it('should produce exception on missing mandatory metric', () => {
     expect(() => validate(cvss.replace('/C:N', ''))).to.throw(
-      /Missing mandatory.*C/
+      /Missing mandatory.*Confidentiality Impact/
     );
   });
 
