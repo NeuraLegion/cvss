@@ -16,6 +16,9 @@ jobs:
         with:
           node-version: 14
 
+      - name: Install deps
+        run: npm ci -q
+      
       - name: Semantic release
         run: npx semantic-release
         env:
