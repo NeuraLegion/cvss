@@ -12,19 +12,18 @@ import {
   temporalMetricValues,
   temporalMetrics
 } from './models';
-import { humanizeBaseMetric, humanizeBaseMetricValue } from './humanizer';
 import { parseMetricsAsMap, parseVector, parseVersion } from '../../parser';
 
 export const validateVersion = (versionStr: string | null): void => {
   if (!versionStr) {
     throw new Error(
-      'Invalid CVSS string. Example: CVSS:3.0/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L'
+      'Invalid CVSS string. Example: CVSS:2.0/AV:N/AC:L/Au:N/C:N/I:N/A:C'
     );
   }
 
-  if (versionStr !== '3.0' && versionStr !== '3.1') {
+  if (versionStr !== '2.0') {
     throw new Error(
-      `Unsupported CVSS version: ${versionStr}. Only 3.0 and 3.1 are supported by this validator.`
+      `Unsupported CVSS version: ${versionStr}. Only 2.0 is supported by this validator.`
     );
   }
 };
@@ -32,7 +31,7 @@ export const validateVersion = (versionStr: string | null): void => {
 const validateVector = (vectorStr: string | null): void => {
   if (!vectorStr || vectorStr.includes('//')) {
     throw new Error(
-      'Invalid CVSS string. Example: CVSS:3.0/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L'
+      'Invalid CVSS string. Example: CVSS:2.0/AV:N/AC:L/Au:N/C:N/I:N/A:C'
     );
   }
 };
@@ -64,12 +63,7 @@ const checkMandatoryMetrics = (
 ): void => {
   metrics.forEach((metric: Metric) => {
     if (!metricsMap.has(metric)) {
-      // eslint-disable-next-line max-len
-      throw new Error(
-        `Missing mandatory CVSS metric ${metrics} (${humanizeBaseMetric(
-          metric
-        )})`
-      );
+      throw new Error(`Missing mandatory CVSS metric ${metric}`);
     }
   });
 };
@@ -85,18 +79,9 @@ const checkMetricsValues = (
       return;
     }
     if (!metricsValues[metric].includes(userValue as MetricValue)) {
-      const allowedValuesHumanized = metricsValues[metric]
-        .map(
-          (value: MetricValue) =>
-            `${value} (${humanizeBaseMetricValue(value, metric)})`
-        )
-        .join(', ');
+      const allowedValues = metricsValues[metric].join(', ');
       throw new Error(
-        `Invalid value for CVSS metric ${metric} (${humanizeBaseMetric(
-          metric
-        )})${
-          userValue ? `: ${userValue}` : ''
-        }. Allowed values: ${allowedValuesHumanized}`
+        `Invalid value for CVSS metric ${metric}: ${userValue}. Allowed values: ${allowedValues}`
       );
     }
   });
@@ -109,10 +94,6 @@ type ValidationResult = {
   versionStr: string | null;
 };
 
-/**
- * Validate that the given string is a valid cvss vector
- * @param cvssStr
- */
 export const validate = (cvssStr: string): ValidationResult => {
   if (!cvssStr || !cvssStr.startsWith('CVSS:')) {
     throw new Error('CVSS vector must start with "CVSS:"');

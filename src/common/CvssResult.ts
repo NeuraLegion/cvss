@@ -20,8 +20,22 @@ export interface CvssResultV3 extends BaseCvssResult {
   environmentalScore?: number;
 
   /** Subscores after Environmental modifications (optional) */
-  environmentalImpact?: number;
-  environmentalExploitability?: number;
+  modifiedImpact?: number;
+  modifiedExploitability?: number;
 }
 
-export type CvssResult = CvssResultV3;
+export interface CvssResultV2 extends BaseCvssResult {
+  version: '2.0';
+
+  /** Subscores for the Base score */
+  baseImpact: number;
+  baseExploitability: number;
+
+  /** Temporal score (if temporal metrics defined) */
+  temporalScore?: number;
+
+  /** Environmental score (if env metrics defined) */
+  environmentalScore?: number;
+}
+
+export type CvssResult = CvssResultV3 | CvssResultV2;

@@ -422,7 +422,7 @@ export class CvssV3Calculator implements CvssCalculator {
     versionStr: string
   ): Pick<
     CvssResultV3,
-    'environmentalScore' | 'environmentalImpact' | 'environmentalExploitability'
+    'environmentalScore' | 'modifiedImpact' | 'modifiedExploitability'
   > {
     metricsMap = populateTemporalMetricDefaults(metricsMap);
     metricsMap = populateEnvironmentalMetricDefaults(metricsMap);
@@ -470,9 +470,8 @@ export class CvssV3Calculator implements CvssCalculator {
 
     return {
       environmentalScore,
-      environmentalImpact: impact <= 0 ? 0 : round(impact),
-      environmentalExploitability:
-        exploitability <= 0 ? 0 : round(exploitability)
+      modifiedImpact: impact <= 0 ? 0 : round(impact),
+      modifiedExploitability: exploitability <= 0 ? 0 : round(exploitability)
     };
   }
 }

@@ -1,7 +1,11 @@
 import type { CvssResult } from './common/CvssResult';
 import type { CvssVersion } from './common/CvssVersion';
 import { createCvssCalculator } from './factory';
-import { parseVersion } from './versions/v3/parser';
+import { Metric, MetricValue } from './versions/v3/models';
+import { validate as validateV2 } from './versions/v2/validator';
+import { validate as validateV3 } from './versions/v3/validator';
+import { parseMetricsAsMap as parseMetricsAsMapString } from './parser';
+import { parseVersion } from './parser';
 
 // ============================================================================
 // Backward Compatible Public API
@@ -97,10 +101,43 @@ export const calculateEnvironmentalResult = (
 
   return {
     score: res.environmentalScore ?? res.temporalScore ?? res.baseScore,
-    impact: res.environmentalImpact ?? res.baseImpact,
-    exploitability: res.environmentalExploitability ?? res.baseExploitability,
+    impact:
+      res.version === '2.0'
+        ? res.baseImpact
+        : res.modifiedImpact ?? res.baseImpact,
+    exploitability:
+      res.version === '2.0'
+        ? res.baseImpact
+        : res.modifiedExploitability ?? res.baseExploitability,
     metricsMap: res.metrics
   };
+};
+
+export const parseMetricsAsMap = (cvssStr: string): Map<Metric, MetricValue> =>
+  parseMetricsAsMapString(cvssStr) as Map<Metric, MetricValue>;
+
+export const validateVersion = (versionStr: string | null): void => {
+  if (!versionStr) {
+    throw new Error(
+      'Invalid CVSS string. Example: CVSS:3.0/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L'
+    );
+  }
+
+  if (versionStr !== '2.0' && versionStr !== '3.0' && versionStr !== '3.1') {
+    throw new Error(
+      `Unsupported CVSS version: ${versionStr}. Only 2.0, 3.0 and 3.1 are supported.`
+    );
+  }
+};
+
+export const validate = (cvssString: string): void => {
+  if (!cvssString || !cvssString.startsWith('CVSS:')) {
+    throw new Error('CVSS vector must start with "CVSS:"');
+  }
+
+  const versionStr = parseVersion(cvssString);
+  const validateString = versionStr === '2.0' ? validateV2 : validateV3;
+  validateString(cvssString);
 };
 
 // ============================================================================
@@ -146,7 +183,5 @@ export {
   type KeyValue,
   parseVector,
   parseVersion,
-  parseMetrics,
-  parseMetricsAsMap
-} from './versions/v3/parser';
-export { validateVersion, validate } from './versions/v3/validator';
+  parseMetrics
+} from './parser';
