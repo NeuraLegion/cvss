@@ -119,7 +119,7 @@ describe('calculateEnvironmentalResult()', () => {
       expect(res.impact).to.equal(modifiedImpact);
     });
 
-    it(`should calculate modified exploitability of ${modifiedImpact} for ${cvss}`, () => {
+    it(`should calculate modified exploitability of ${modifiedExploitability} for ${cvss}`, () => {
       expect(res.exploitability).to.equal(modifiedExploitability);
     });
   });
