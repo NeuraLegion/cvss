@@ -1,9 +1,6 @@
 name: Automated deploy
 
-on:
-  push:
-    tags:
-      - 'v*'
+on: [push]
 
 jobs:
   prepare:
@@ -13,7 +10,7 @@ jobs:
       project: ${{ steps.project.outputs.value }}
     steps:
       - id: project_version
-        run: echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
+        run: echo ::set-output name=value::v1.2.3
       - id: project
         run: echo ::set-output name=value::$(echo ${GITHUB_REPOSITORY#*/} | tr A-Z a-z)
 
@@ -38,9 +35,11 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true
 
       - uses: actions/setup-node@v1
         with:
+          node-version: 14
           registry-url: 'https://npm.pkg.github.com'
           scope: '@NeuraLegion'
 
