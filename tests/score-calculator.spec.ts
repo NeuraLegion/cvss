@@ -9,7 +9,7 @@ import { expect } from 'chai';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-// CVSS => base, temporal, environmental
+// CVSS => base, temporal, environmental, baseImpact, baseExploitability, modifiedImpact, modifiedExploitability
 const cvssTests = {
   'CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N': [
     8.6, 8.6, 8.6, 4, 3.9, 4, 3.9
