@@ -290,6 +290,12 @@ export const roundUp = (input: number): number => {
     : (Math.floor(intInput / 10000) + 1) / 10;
 };
 
+const round = (input: number): number => {
+  const intInput = Math.round(input * 100000);
+
+  return Math.round(intInput / 10000) / 10;
+};
+
 export const modifiedMetricsMap: { [key: string]: BaseMetric } = {
   MAV: BaseMetric.ATTACK_VECTOR,
   MAC: BaseMetric.ATTACK_COMPLEXITY,
@@ -376,8 +382,8 @@ export class CvssV3Calculator implements CvssCalculator {
     return {
       version: versionStr as '3.0' | '3.1',
       baseScore,
-      baseImpact: impact <= 0 ? 0 : roundUp(impact),
-      baseExploitability: impact <= 0 ? 0 : roundUp(exploitability),
+      baseImpact: impact <= 0 ? 0 : round(impact),
+      baseExploitability: exploitability <= 0 ? 0 : round(exploitability),
       metrics: metricsMap
     };
   }
@@ -464,8 +470,9 @@ export class CvssV3Calculator implements CvssCalculator {
 
     return {
       environmentalScore,
-      environmentalImpact: impact <= 0 ? 0 : roundUp(impact),
-      environmentalExploitability: impact <= 0 ? 0 : roundUp(exploitability)
+      environmentalImpact: impact <= 0 ? 0 : round(impact),
+      environmentalExploitability:
+        exploitability <= 0 ? 0 : round(exploitability)
     };
   }
 }
