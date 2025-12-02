@@ -142,6 +142,21 @@ export const validateVersion = (versionStr: string | null): void => {
   }
 };
 
+/**
+ * Stringify a score into a qualitative severity rating string
+ * @param score
+ */
+export const humanizeScore = (score: number): string =>
+  score <= 0
+    ? 'None'
+    : score <= 3.9
+    ? 'Low'
+    : score <= 6.9
+    ? 'Medium'
+    : score <= 8.9
+    ? 'High'
+    : 'Critical';
+
 // ============================================================================
 // Re-exports for backward compatibility
 // ============================================================================
@@ -160,8 +175,7 @@ export {
 } from './versions/v3/calculator';
 export {
   humanizeBaseMetric,
-  humanizeBaseMetricValue,
-  humanizeScore
+  humanizeBaseMetricValue
 } from './versions/v3/humanizer';
 export {
   BaseMetric,
