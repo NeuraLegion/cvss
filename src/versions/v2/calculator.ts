@@ -10,9 +10,9 @@ import {
   environmentalMetrics,
   temporalMetrics
 } from './models';
-import { validate } from './validator';
 import { CvssCalculator } from '../../common/CvssCalculator';
 import { CvssResultV2 } from '../../common/CvssResult';
+import { parseMetricsAsMap } from '../../parser';
 
 const baseMetricValueScores: Record<
   BaseMetric,
@@ -140,7 +140,10 @@ export const populateEnvironmentalMetricDefaults = (
 
 export class CvssV2Calculator implements CvssCalculator {
   public calculate(cvssString: string): CvssResultV2 {
-    const { metricsMap } = validate(cvssString);
+    const metricsMap = parseMetricsAsMap(cvssString) as Map<
+      Metric,
+      MetricValue
+    >;
 
     const baseResult = this.calculateBaseScore(metricsMap);
     const temporalResult = this.calculateTemporalScore(baseResult, metricsMap);

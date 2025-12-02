@@ -1,7 +1,10 @@
 import {
   calculateBaseResult,
   calculateTemporalResult,
-  calculateEnvironmentalResult
+  calculateEnvironmentalResult,
+  calculateBaseScore,
+  calculateTemporalScore,
+  calculateEnvironmentalScore
 } from '../src';
 import { expect } from 'chai';
 
@@ -20,6 +23,20 @@ const cvssTests: Record<string, number[]> = {
 };
 
 describe('calculateBaseResult()', () => {
+  it('should throw an exception on empty value', () => {
+    expect(() => calculateBaseResult('')).to.throw();
+  });
+
+  it('should throw an exception on missing mandatory metric', () => {
+    expect(() => calculateBaseResult('CVSS:3.1/A:H')).to.throw();
+  });
+
+  it('should throw an exception on unsupported version', () => {
+    expect(() =>
+      calculateBaseResult('CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
+    ).to.throw();
+  });
+
   Object.entries(cvssTests).map((entry) => {
     const cvss = entry[0];
     const baseScore = entry[1][0];
@@ -43,6 +60,20 @@ describe('calculateBaseResult()', () => {
 });
 
 describe('calculateTemporalResult()', () => {
+  it('should throw an exception on empty value', () => {
+    expect(() => calculateTemporalResult('')).to.throw();
+  });
+
+  it('should throw an exception on missing mandatory metric', () => {
+    expect(() => calculateTemporalResult('CVSS:3.1/A:H')).to.throw();
+  });
+
+  it('should throw an exception on unsupported version', () => {
+    expect(() =>
+      calculateTemporalResult('CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
+    ).to.throw();
+  });
+
   Object.entries(cvssTests).map((entry) => {
     const cvss = entry[0];
     const temporalScore = entry[1][1];
@@ -56,6 +87,22 @@ describe('calculateTemporalResult()', () => {
 });
 
 describe('calculateEnvironmentalResult()', () => {
+  it('should throw an exception on empty value', () => {
+    expect(() => calculateEnvironmentalResult('')).to.throw();
+  });
+
+  it('should throw an exception on missing mandatory metric', () => {
+    expect(() => calculateEnvironmentalResult('CVSS:3.1/A:H')).to.throw();
+  });
+
+  it('should throw an exception on unsupported version', () => {
+    expect(() =>
+      calculateEnvironmentalResult(
+        'CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N'
+      )
+    ).to.throw();
+  });
+
   Object.entries(cvssTests).map((entry) => {
     const cvss = entry[0];
     const environmentalScore = entry[1][2];
@@ -74,6 +121,86 @@ describe('calculateEnvironmentalResult()', () => {
 
     it(`should calculate modified exploitability of ${modifiedImpact} for ${cvss}`, () => {
       expect(res.exploitability).to.equal(modifiedExploitability);
+    });
+  });
+});
+
+describe('calculateBaseScore()', () => {
+  it('should throw an exception on empty value', () => {
+    expect(() => calculateBaseScore('')).to.throw();
+  });
+
+  it('should throw an exception on missing mandatory metric', () => {
+    expect(() => calculateBaseScore('CVSS:3.1/A:H')).to.throw();
+  });
+
+  it('should throw an exception on unsupported version', () => {
+    expect(() =>
+      calculateBaseScore('CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
+    ).to.throw();
+  });
+
+  Object.entries(cvssTests).map((entry) => {
+    const cvss = entry[0];
+    const expectedScore = entry[1][0];
+    const score = calculateBaseScore(cvss);
+
+    it(`should calculate a base score of ${expectedScore} for ${cvss}`, () => {
+      expect(score).to.equal(expectedScore);
+    });
+  });
+});
+
+describe('calculateTemporalScore()', () => {
+  it('should throw an exception on empty value', () => {
+    expect(() => calculateTemporalScore('')).to.throw();
+  });
+
+  it('should throw an exception on missing mandatory metric', () => {
+    expect(() => calculateTemporalScore('CVSS:3.1/A:H')).to.throw();
+  });
+
+  it('should throw an exception on unsupported version', () => {
+    expect(() =>
+      calculateTemporalScore('CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
+    ).to.throw();
+  });
+
+  Object.entries(cvssTests).map((entry) => {
+    const cvss = entry[0];
+    const expectedScore = entry[1][1];
+    const score = calculateTemporalScore(cvss);
+
+    it(`should calculate a temporal score of ${expectedScore} for ${cvss}`, () => {
+      expect(score).to.equal(expectedScore);
+    });
+  });
+});
+
+describe('calculateEnvironmentalScore()', () => {
+  it('should throw an exception on empty value', () => {
+    expect(() => calculateEnvironmentalScore('')).to.throw();
+  });
+
+  it('should throw an exception on missing mandatory metric', () => {
+    expect(() => calculateEnvironmentalScore('CVSS:3.1/A:H')).to.throw();
+  });
+
+  it('should throw an exception on unsupported version', () => {
+    expect(() =>
+      calculateEnvironmentalScore(
+        'CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N'
+      )
+    ).to.throw();
+  });
+
+  Object.entries(cvssTests).map((entry) => {
+    const cvss = entry[0];
+    const expectedScore = entry[1][2];
+    const score = calculateEnvironmentalScore(cvss);
+
+    it(`should calculate an environmental score of ${expectedScore} for ${cvss}`, () => {
+      expect(score).to.equal(expectedScore);
     });
   });
 });

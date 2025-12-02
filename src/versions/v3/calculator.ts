@@ -10,9 +10,9 @@ import {
   environmentalMetrics,
   temporalMetrics
 } from './models';
-import { validate } from './validator';
 import { CvssCalculator } from '../../common/CvssCalculator';
 import { CvssResultV3 } from '../../common/CvssResult';
+import { parseMetricsAsMap, parseVersion } from 'src/parser';
 
 // https://www.first.org/cvss/v3.1/specification-document#7-4-Metric-Values
 const baseMetricValueScores: Record<
@@ -344,13 +344,17 @@ export const populateEnvironmentalMetricDefaults = (
 
 export class CvssV3Calculator implements CvssCalculator {
   public calculate(cvssString: string): CvssResultV3 {
-    const { metricsMap, versionStr } = validate(cvssString);
+    const metricsMap = parseMetricsAsMap(cvssString) as Map<
+      Metric,
+      MetricValue
+    >;
+    const versionStr = parseVersion(cvssString)!;
 
-    const baseResult = this.calculateBaseScore(metricsMap, versionStr!);
+    const baseResult = this.calculateBaseScore(metricsMap, versionStr);
     const temporalResult = this.calculateTemporalScore(baseResult);
     const environmentalResult = this.calculateEnvironmentalScore(
       metricsMap,
-      versionStr!
+      versionStr
     );
 
     return {

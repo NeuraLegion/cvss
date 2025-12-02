@@ -18,11 +18,23 @@ export interface ScoreResult {
   metricsMap: Map<string, string>;
 }
 
+export const validate = (cvssString: string): void => {
+  if (!cvssString || !cvssString.startsWith('CVSS:')) {
+    throw new Error('CVSS vector must start with "CVSS:"');
+  }
+
+  const versionStr = parseVersion(cvssString);
+  const validateString = versionStr === '2.0' ? validateV2 : validateV3;
+  validateString(cvssString);
+};
+
 function calculateCvss(cvssString: string): CvssResult {
   const version = parseVersion(cvssString);
   if (!version) {
     throw new Error('Invalid CVSS string: unable to detect version');
   }
+
+  validate(cvssString);
 
   return createCvssCalculator(version as CvssVersion).calculate(cvssString);
 }
@@ -128,16 +140,6 @@ export const validateVersion = (versionStr: string | null): void => {
       `Unsupported CVSS version: ${versionStr}. Only 2.0, 3.0 and 3.1 are supported.`
     );
   }
-};
-
-export const validate = (cvssString: string): void => {
-  if (!cvssString || !cvssString.startsWith('CVSS:')) {
-    throw new Error('CVSS vector must start with "CVSS:"');
-  }
-
-  const versionStr = parseVersion(cvssString);
-  const validateString = versionStr === '2.0' ? validateV2 : validateV3;
-  validateString(cvssString);
 };
 
 // ============================================================================
