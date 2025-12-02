@@ -1,10 +1,4 @@
-import {
-  BaseMetric,
-  EnvironmentalMetric,
-  Metric,
-  MetricValue,
-  TemporalMetric
-} from './models';
+import { BaseMetric, EnvironmentalMetric, TemporalMetric } from './models';
 
 // eslint-disable-next-line complexity
 export const humanizeMetric = (metric: string): string => {
