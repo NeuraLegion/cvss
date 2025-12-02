@@ -169,7 +169,7 @@ const cvssTests: Record<string, number[]> = {
   'CVSS:2.0/AV:L/AC:L/Au:N/C:C/I:N/A:P': [5.6, 7.8, 3.9],
   'CVSS:2.0/AV:N/AC:L/Au:S/C:N/I:C/A:P': [7.5, 7.8, 8],
   'CVSS:2.0/AV:A/AC:L/Au:M/C:P/I:P/A:P': [4.7, 6.4, 4.1],
-  // syntetical test data with temporal and environmental metrics random values
+  // synthetic test data with temporal and environmental metrics random values
   'CVSS:2.0/AV:N/AC:L/Au:S/C:C/I:C/A:C/E:F/RL:ND/RC:ND/CDP:N/TD:L/CR:H/IR:M/AR:ND':
     [9, 10, 8, 8.5, 2.2],
   'CVSS:2.0/AV:N/AC:L/Au:N/C:P/I:N/A:N/E:U/RL:U/RC:C/CDP:ND/TD:N/CR:L/IR:ND/AR:L':
