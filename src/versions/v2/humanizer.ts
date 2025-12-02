@@ -175,13 +175,3 @@ export const humanizeMetricValue = (value: string, metric: string): string => {
 
   return 'Unknown';
 };
-
-// legacy, before introduction of Temporal and Environmental metrics support
-export const humanizeBaseMetric = (metric: Metric): string =>
-  humanizeMetric(metric);
-
-// legacy, before introduction of Temporal and Environmental metrics support
-export const humanizeBaseMetricValue = (
-  value: Metric,
-  metric: MetricValue
-): string => humanizeMetricValue(value, metric);
