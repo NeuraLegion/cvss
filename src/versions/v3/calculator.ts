@@ -12,7 +12,7 @@ import {
 } from './models';
 import { CvssCalculator } from '../../common/CvssCalculator';
 import { CvssResultV3 } from '../../common/CvssResult';
-import { parseMetricsAsMap, parseVersion } from 'src/parser';
+import { parseMetricsAsMap, parseVersion } from '../../parser';
 
 // https://www.first.org/cvss/v3.1/specification-document#7-4-Metric-Values
 const baseMetricValueScores: Record<
