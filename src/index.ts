@@ -107,7 +107,7 @@ export const calculateEnvironmentalResult = (
         : res.modifiedImpact ?? res.baseImpact,
     exploitability:
       res.version === '2.0'
-        ? res.baseImpact
+        ? res.baseExploitability
         : res.modifiedExploitability ?? res.baseExploitability,
     metricsMap: res.metrics
   };
