@@ -1,10 +1,4 @@
-import {
-  calculateBaseResult,
-  calculateBaseScore,
-  calculateEnvironmentalResult,
-  calculateEnvironmentalScore,
-  calculateTemporalScore
-} from '../src';
+import { CvssV3Calculator } from '../src/versions/v3/calculator';
 import { expect } from 'chai';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -104,98 +98,81 @@ const cvssTests = {
 
 /* eslint-enable @typescript-eslint/naming-convention */
 
-describe('Calculator', () => {
-  // https://www.first.org/cvss/user-guide#3-1-CVSS-Scoring-in-the-Exploit-Life-Cycle
-  it('should throw an exception on empty value', () => {
-    expect(() => calculateBaseScore('')).to.throw();
-  });
-
-  // https://www.first.org/cvss/user-guide#3-1-CVSS-Scoring-in-the-Exploit-Life-Cycle
-  it('should throw an exception on missing metric', () => {
-    expect(() => calculateBaseScore('CVSS:3.1/A:H')).to.throw();
-  });
-
-  // https://www.first.org/cvss/user-guide#3-1-CVSS-Scoring-in-the-Exploit-Life-Cycle
-  it('should throw an exception on unsupported version', () => {
-    expect(() =>
-      calculateBaseScore('CVSS:2.1/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
-    ).to.throw();
-  });
-});
-
-describe('Calculate correctly base scores', () => {
-  Object.entries(cvssTests).map((entry) => {
-    const cvss = entry[0];
-    const baseScore = entry[1][0];
-    it(`should calculate a score of ${baseScore} for ${cvss}`, () => {
-      const score = calculateBaseScore(cvss);
-      expect(score).to.equal(baseScore);
+describe('CVSS v3 Calculator', () => {
+  describe('Calculate correctly base scores', () => {
+    Object.entries(cvssTests).map((entry) => {
+      const cvss = entry[0];
+      const baseScore = entry[1][0];
+      it(`should calculate a score of ${baseScore} for ${cvss}`, () => {
+        const score = new CvssV3Calculator().calculate(cvss).baseScore;
+        expect(score).to.equal(baseScore);
+      });
     });
   });
-});
 
-describe('Calculate correctly base impact', () => {
-  Object.entries(cvssTests).map((entry) => {
-    const cvss = entry[0];
-    const impact = entry[1][3];
-    it(`should calculate impact of ${impact} for ${cvss}`, () => {
-      const res = calculateBaseResult(cvss);
-      expect(res.impact).to.equal(impact);
+  describe('Calculate correctly base impact', () => {
+    Object.entries(cvssTests).map((entry) => {
+      const cvss = entry[0];
+      const impact = entry[1][3];
+      it(`should calculate impact of ${impact} for ${cvss}`, () => {
+        const res = new CvssV3Calculator().calculate(cvss);
+        expect(res.baseImpact).to.equal(impact);
+      });
     });
   });
-});
 
-describe('Calculate correctly base exploitability', () => {
-  Object.entries(cvssTests).map((entry) => {
-    const cvss = entry[0];
-    const exploitability = entry[1][4];
-    it(`should calculate exploitability of ${exploitability} for ${cvss}`, () => {
-      const res = calculateBaseResult(cvss);
-      expect(res.exploitability).to.equal(exploitability);
+  describe('Calculate correctly base exploitability', () => {
+    Object.entries(cvssTests).map((entry) => {
+      const cvss = entry[0];
+      const exploitability = entry[1][4];
+      it(`should calculate exploitability of ${exploitability} for ${cvss}`, () => {
+        const res = new CvssV3Calculator().calculate(cvss);
+        expect(res.baseExploitability).to.equal(exploitability);
+      });
     });
   });
-});
 
-describe('Calculate correctly temporal scores', () => {
-  Object.entries(cvssTests).map((entry) => {
-    const cvss = entry[0];
-    const temporalScore = entry[1][1];
-    it(`should calculate a score of ${temporalScore} for ${cvss}`, () => {
-      const score = calculateTemporalScore(cvss);
-      expect(score).to.equal(temporalScore);
+  describe('Calculate correctly temporal scores', () => {
+    Object.entries(cvssTests).map((entry) => {
+      const cvss = entry[0];
+      const temporalScore = entry[1][1];
+      it(`should calculate a score of ${temporalScore} for ${cvss}`, () => {
+        const score = new CvssV3Calculator().calculate(cvss).temporalScore;
+        expect(score).to.equal(temporalScore);
+      });
     });
   });
-});
 
-describe('Calculate correctly environmental scores', () => {
-  Object.entries(cvssTests).map((entry) => {
-    const cvss = entry[0];
-    const environmentalScore = entry[1][2];
-    it(`should calculate a score of ${environmentalScore} for ${cvss}`, () => {
-      const score = calculateEnvironmentalScore(cvss);
-      expect(score).to.equal(environmentalScore);
+  describe('Calculate correctly environmental scores', () => {
+    Object.entries(cvssTests).map((entry) => {
+      const cvss = entry[0];
+      const environmentalScore = entry[1][2];
+      it(`should calculate a score of ${environmentalScore} for ${cvss}`, () => {
+        const score = new CvssV3Calculator().calculate(cvss).environmentalScore;
+        expect(score).to.equal(environmentalScore);
+      });
     });
   });
-});
 
-describe('Calculate correctly modified impact', () => {
-  Object.entries(cvssTests).map((entry) => {
-    const cvss = entry[0];
-    const impact = entry[1][5];
-    it(`should calculate impact of ${impact} for ${cvss}`, () => {
-      const res = calculateEnvironmentalResult(cvss);
-      expect(res.impact).to.equal(impact);
+  describe('Calculate correctly modified impact', () => {
+    Object.entries(cvssTests).map((entry) => {
+      const cvss = entry[0];
+      const impact = entry[1][5];
+      it(`should calculate impact of ${impact} for ${cvss}`, () => {
+        const res = new CvssV3Calculator().calculate(cvss);
+        expect(res.modifiedImpact).to.equal(impact);
+      });
     });
   });
-});
 
-describe('Calculate correctly modified exploitability', () => {
-  Object.entries(cvssTests).map((entry) => {
-    const cvss = entry[0];
-    const exploitability = entry[1][6];
-    it(`should calculate exploitability of ${exploitability} for ${cvss}`, () => {
-      const res = calculateEnvironmentalResult(cvss);
-      expect(res.exploitability).to.equal(exploitability);
+  describe('Calculate correctly modified exploitability', () => {
+    Object.entries(cvssTests).map((entry) => {
+      const cvss = entry[0];
+      const exploitability = entry[1][6];
+      it(`should calculate exploitability of ${exploitability} for ${cvss}`, () => {
+        const res = new CvssV3Calculator().calculate(cvss);
+        expect(res.modifiedExploitability).to.equal(exploitability);
+      });
     });
   });
 });

@@ -6,19 +6,19 @@ import {
   temporalMetricValues,
   temporalMetrics
 } from './models';
-import { humanizeMetric, humanizeMetricValue } from './humanizer';
 import { validateByKnownMaps } from '../validator';
+import { humanizeMetric, humanizeMetricValue } from './humanizer';
 
 export const validateVersion = (versionStr: string | null): void => {
   if (!versionStr) {
     throw new Error(
-      'Invalid CVSS string. Example: CVSS:3.0/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L'
+      'Invalid CVSS string. Example: CVSS:2.0/AV:N/AC:L/Au:N/C:N/I:N/A:C'
     );
   }
 
-  if (versionStr !== '3.0' && versionStr !== '3.1') {
+  if (versionStr !== '2.0') {
     throw new Error(
-      `Unsupported CVSS version: ${versionStr}. Only 3.0 and 3.1 are supported by this validator.`
+      `Unsupported CVSS version: ${versionStr}. Only 2.0 is supported by this validator.`
     );
   }
 };

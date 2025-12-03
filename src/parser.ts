@@ -1,5 +1,3 @@
-import { BaseMetric, BaseMetricValue, Metric, MetricValue } from './models';
-
 export interface KeyValue<K, V> {
   key: K;
   value: V;
@@ -16,7 +14,9 @@ export const parseVersion = (cvssStr: string): string | null => {
 export const parseVector = (cvssStr: string): string | null => {
   const versionRegexRes = VERSION_REGEX.exec(cvssStr);
 
-  return versionRegexRes && versionRegexRes[2] && versionRegexRes[2].substr(1);
+  return (
+    versionRegexRes && versionRegexRes[2] && versionRegexRes[2].substring(1)
+  );
 };
 
 export const parseMetrics = (vectorStr: string): KeyValue<string, string>[] =>
@@ -30,19 +30,19 @@ export const parseMetrics = (vectorStr: string): KeyValue<string, string>[] =>
     return { key: parts[0], value: parts[1] };
   });
 
-export const parseMetricsAsMap = (cvssStr: string): Map<Metric, MetricValue> =>
+export const parseMetricsAsMap = (cvssStr: string): Map<string, string> =>
   parseMetrics(parseVector(cvssStr) || '').reduce(
     (
-      res: Map<BaseMetric, BaseMetricValue>,
+      res: Map<string, string>,
       metric: KeyValue<string, string>
-    ): Map<BaseMetric, BaseMetricValue> => {
-      if (res.has(metric.key as BaseMetric)) {
+    ): Map<string, string> => {
+      if (res.has(metric.key)) {
         throw new Error(
           `Duplicated metric: "${metric.key}:${metric.value || ''}"`
         );
       }
 
-      return res.set(metric.key as BaseMetric, metric.value as BaseMetricValue);
+      return res.set(metric.key, metric.value);
     },
-    new Map<BaseMetric, BaseMetricValue>()
+    new Map<string, string>()
   );
