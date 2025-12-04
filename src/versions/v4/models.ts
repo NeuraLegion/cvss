@@ -61,15 +61,17 @@ export type SupplementalMetricValue =
   | 'A'
   | 'S'
   | 'U'
-  | 'R'
   | 'I'
   | 'L'
   | 'H'
   | 'C'
   | 'Y'
   | 'D'
-  | 'G'
-  | 'M';
+  | 'M'
+  | 'Clear'
+  | 'Green'
+  | 'Amber'
+  | 'Red';
 
 export type MetricValue =
   | BaseMetricValue
@@ -206,5 +208,5 @@ export const supplementalMetricValues: MetricValues<
   [SupplementalMetric.RECOVERY]: ['X', 'A', 'U', 'I'],
   [SupplementalMetric.VALUE_DENSITY]: ['X', 'D', 'C'],
   [SupplementalMetric.VULNERABILITY_RESPONSE_EFFORT]: ['X', 'L', 'M', 'H'],
-  [SupplementalMetric.PROVIDER_URGENCY]: ['X', 'C', 'G', 'A', 'R']
+  [SupplementalMetric.PROVIDER_URGENCY]: ['X', 'Clear', 'Green', 'Amber', 'Red']
 };
