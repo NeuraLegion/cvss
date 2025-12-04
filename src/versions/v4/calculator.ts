@@ -3,6 +3,7 @@ import { CvssResult } from '../../common/CvssResult';
 import { parseMetricsAsMap } from '../../parser';
 import { cvssLookup } from './cvss-lookup';
 import {
+  BaseMetric,
   baseMetrics,
   EnvironmentalMetric,
   Metric,
@@ -19,23 +20,27 @@ import {
 
 export class CvssV4Calculator implements CvssCalculator {
   public calculate(cvssString: string): CvssResult {
-    const metricsMap = parseMetricsAsMap(cvssString) as Map<
-      Metric,
-      MetricValue
-    >;
-    const baseScore = this.calculateScore(metricsMap);
+    const metrics = this.getEffectiveMetricsMap(
+      this.populateDefaults(
+        parseMetricsAsMap(cvssString) as Map<Metric, MetricValue>
+      )
+    );
+
+    const score = this.hasImpact(metrics)
+      ? this.interpolateScore(new MacroVector(metrics), metrics)
+      : 0;
 
     return {
       version: '4.0',
-      baseScore,
-      metrics: metricsMap
+      baseScore: Math.round(score * 10) / 10,
+      metrics
     };
   }
 
   private populateDefaults(
-    metricsMap: Map<Metric, MetricValue>
+    metrics: Map<Metric, MetricValue>
   ): Map<Metric, MetricValue> {
-    const result = new Map<Metric, MetricValue>(metricsMap);
+    const result = new Map<Metric, MetricValue>(metrics);
 
     const exploitMaturity = ThreatMetric.EXPLOIT_MATURITY;
     if (!result.has(exploitMaturity) || result.get(exploitMaturity) === 'X') {
@@ -72,12 +77,12 @@ export class CvssV4Calculator implements CvssCalculator {
   }
 
   private getEffectiveMetricsMap(
-    metricsMap: Map<Metric, MetricValue>
+    metrics: Map<Metric, MetricValue>
   ): Map<Metric, MetricValue> {
-    const result = new Map<Metric, MetricValue>(metricsMap);
+    const result = new Map<Metric, MetricValue>(metrics);
     for (const metric of baseMetrics) {
       const modifiedMetric = ('M' + metric) as Metric;
-      const modifiedValue = metricsMap.get(modifiedMetric);
+      const modifiedValue = metrics.get(modifiedMetric);
       if (modifiedValue && modifiedValue !== 'X') {
         result.set(metric, modifiedValue);
         continue;
@@ -87,16 +92,19 @@ export class CvssV4Calculator implements CvssCalculator {
     return result;
   }
 
-  private calculateScore(metricsMap: Map<Metric, MetricValue>): number {
-    const defaultedMap = this.populateDefaults(metricsMap);
-    const effectiveMetrics = this.getEffectiveMetricsMap(defaultedMap);
+  private hasImpact(metrics: Map<Metric, MetricValue>): boolean {
+    const impactMetrics: BaseMetric[] = [
+      BaseMetric.VULNERABLE_SYSTEM_CONFIDENTIALITY,
+      BaseMetric.VULNERABLE_SYSTEM_INTEGRITY,
+      BaseMetric.VULNERABLE_SYSTEM_AVAILABILITY,
+      BaseMetric.SUBSEQUENT_SYSTEM_CONFIDENTIALITY,
+      BaseMetric.SUBSEQUENT_SYSTEM_INTEGRITY,
+      BaseMetric.SUBSEQUENT_SYSTEM_AVAILABILITY
+    ];
 
-    const finalScore = this.interpolateScore(
-      new MacroVector(effectiveMetrics),
-      effectiveMetrics
+    return impactMetrics.some(
+      (metric) => metrics.get(metric as Metric) !== 'N'
     );
-
-    return Math.round(finalScore * 10) / 10;
   }
 
   private interpolateScore(
