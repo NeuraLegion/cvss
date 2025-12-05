@@ -146,6 +146,10 @@ Issues and pull requests are highly welcome. 👍
 
 Please, don't forget to lint (`npm run lint`) and test (`npm t`) the code.
 
+## Attributions
+
+The CVSS v4 scoring lookup table in `src/versions/v4/cvss-lookup.ts` is derived from [FIRST.org's CVSS v4 calculator](https://github.com/FIRSTdotorg/cvss-v4-calculator), licensed under BSD-2-Clause.
+
 ## License
 
 Copyright © 2020 [NeuraLegion](https://github.com/NeuraLegion).

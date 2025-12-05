@@ -14,13 +14,24 @@ import { expect } from 'chai';
 const cvssTests: Record<string, number[]> = {
   'CVSS:2.0/AV:N/AC:L/Au:N/C:P/I:P/A:N/E:U/RL:W/RC:ND/CDP:N/TD:ND/CR:L/IR:M/AR:L':
     [6.4, 5.2, 4.6, 4.9, 10, 4.9, 10],
-  'CVSS:2.0/AV:N/AC:L/Au:N/C:P/I:P/A:P/E:POC/RL:TF/RC:UR/CDP:L/TD:M/CR:M/IR:ND/AR:M':
-    [7.5, 5.8, 4.7, 6.4, 10, 6.4, 10],
+  'CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N': [
+    8.6, 8.6, 8.6, 4, 3.9, 4, 3.9
+  ],
   'CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:C/C:L/I:L/A:L/E:U/RL:O/RC:U/CR:M/IR:M/AR:M/MAV:A/MAC:H/MPR:L/MUI:N/MS:X/MC:N/MI:H/MA:X':
-    [5.1, 4.1, 5.2, 3.7, 0.9, 4.7, 1.3],
-  'CVSS:3.1/AV:A/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N/E:U/RL:T/RC:C/CR:X/IR:L/AR:L/MAV:N/MAC:H/MPR:L/MUI:N/MS:U/MC:L/MI:L/MA:L':
-    [4.6, 4.1, 3.6, 2.5, 2.1, 2.5, 1.6]
+    [5.1, 4.1, 5.2, 3.7, 0.9, 4.7, 1.3]
 };
+
+const cvssV4Sample =
+  'CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:P/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X';
+
+const cvssTestsAll: Record<string, number[]> = {
+  ...cvssTests,
+  // CVSS v4 => baseScore
+  [cvssV4Sample]: [2.3]
+};
+
+const cvssMissingMetric = 'CVSS:3.1/A:H';
+const cvssUnsupportedVersion = 'CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N';
 
 describe('calculateBaseResult()', () => {
   it('should throw an exception on empty value', () => {
@@ -28,13 +39,11 @@ describe('calculateBaseResult()', () => {
   });
 
   it('should throw an exception on missing mandatory metric', () => {
-    expect(() => calculateBaseResult('CVSS:3.1/A:H')).to.throw();
+    expect(() => calculateBaseResult(cvssMissingMetric)).to.throw();
   });
 
   it('should throw an exception on unsupported version', () => {
-    expect(() =>
-      calculateBaseResult('CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
-    ).to.throw();
+    expect(() => calculateBaseResult(cvssUnsupportedVersion)).to.throw();
   });
 
   Object.entries(cvssTests).map((entry) => {
@@ -57,6 +66,17 @@ describe('calculateBaseResult()', () => {
       expect(res.exploitability).to.equal(exploitability);
     });
   });
+
+  Object.entries(cvssTestsAll).map((entry) => {
+    const cvss = entry[0];
+    const baseScore = entry[1][0];
+
+    const res = calculateBaseResult(cvss);
+
+    it(`should calculate a base score of ${baseScore} for ${cvss}`, () => {
+      expect(res.score).to.equal(baseScore);
+    });
+  });
 });
 
 describe('calculateTemporalResult()', () => {
@@ -65,13 +85,17 @@ describe('calculateTemporalResult()', () => {
   });
 
   it('should throw an exception on missing mandatory metric', () => {
-    expect(() => calculateTemporalResult('CVSS:3.1/A:H')).to.throw();
+    expect(() => calculateTemporalResult(cvssMissingMetric)).to.throw();
   });
 
   it('should throw an exception on unsupported version', () => {
-    expect(() =>
-      calculateTemporalResult('CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
-    ).to.throw();
+    expect(() => calculateTemporalResult(cvssUnsupportedVersion)).to.throw();
+  });
+
+  it('should throw an exception on CVSS v4', () => {
+    expect(() => calculateTemporalResult(cvssV4Sample)).to.throw(
+      'Only base score calculation is supported for CVSS v4.0'
+    );
   });
 
   Object.entries(cvssTests).map((entry) => {
@@ -92,15 +116,19 @@ describe('calculateEnvironmentalResult()', () => {
   });
 
   it('should throw an exception on missing mandatory metric', () => {
-    expect(() => calculateEnvironmentalResult('CVSS:3.1/A:H')).to.throw();
+    expect(() => calculateEnvironmentalResult(cvssMissingMetric)).to.throw();
   });
 
   it('should throw an exception on unsupported version', () => {
     expect(() =>
-      calculateEnvironmentalResult(
-        'CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N'
-      )
+      calculateEnvironmentalResult(cvssUnsupportedVersion)
     ).to.throw();
+  });
+
+  it('should throw an exception on CVSS v4', () => {
+    expect(() => calculateEnvironmentalResult(cvssV4Sample)).to.throw(
+      'Only base score calculation is supported for CVSS v4.0'
+    );
   });
 
   Object.entries(cvssTests).map((entry) => {
@@ -131,16 +159,14 @@ describe('calculateBaseScore()', () => {
   });
 
   it('should throw an exception on missing mandatory metric', () => {
-    expect(() => calculateBaseScore('CVSS:3.1/A:H')).to.throw();
+    expect(() => calculateBaseScore(cvssMissingMetric)).to.throw();
   });
 
   it('should throw an exception on unsupported version', () => {
-    expect(() =>
-      calculateBaseScore('CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
-    ).to.throw();
+    expect(() => calculateBaseScore(cvssUnsupportedVersion)).to.throw();
   });
 
-  Object.entries(cvssTests).map((entry) => {
+  Object.entries(cvssTestsAll).map((entry) => {
     const cvss = entry[0];
     const expectedScore = entry[1][0];
     const score = calculateBaseScore(cvss);
@@ -157,13 +183,17 @@ describe('calculateTemporalScore()', () => {
   });
 
   it('should throw an exception on missing mandatory metric', () => {
-    expect(() => calculateTemporalScore('CVSS:3.1/A:H')).to.throw();
+    expect(() => calculateTemporalScore(cvssMissingMetric)).to.throw();
   });
 
   it('should throw an exception on unsupported version', () => {
-    expect(() =>
-      calculateTemporalScore('CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N')
-    ).to.throw();
+    expect(() => calculateTemporalScore(cvssUnsupportedVersion)).to.throw();
+  });
+
+  it('should throw an exception on CVSS v4', () => {
+    expect(() => calculateTemporalScore(cvssV4Sample)).to.throw(
+      'Only base score calculation is supported for CVSS v4.0'
+    );
   });
 
   Object.entries(cvssTests).map((entry) => {
@@ -183,15 +213,19 @@ describe('calculateEnvironmentalScore()', () => {
   });
 
   it('should throw an exception on missing mandatory metric', () => {
-    expect(() => calculateEnvironmentalScore('CVSS:3.1/A:H')).to.throw();
+    expect(() => calculateEnvironmentalScore(cvssMissingMetric)).to.throw();
   });
 
   it('should throw an exception on unsupported version', () => {
     expect(() =>
-      calculateEnvironmentalScore(
-        'CVSS:1.0/AV:N/AC:L/PR:L/UI:N/S:C/C:L/I:L/A:N'
-      )
+      calculateEnvironmentalScore(cvssUnsupportedVersion)
     ).to.throw();
+  });
+
+  it('should throw an exception on CVSS v4', () => {
+    expect(() => calculateEnvironmentalScore(cvssV4Sample)).to.throw(
+      'Only base score calculation is supported for CVSS v4.0'
+    );
   });
 
   Object.entries(cvssTests).map((entry) => {
