@@ -1,5 +1,7 @@
 import { CvssV4Calculator } from '../src/versions/v4/calculator';
 import { expect } from 'chai';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -682,13 +684,36 @@ const cvssTests = {
 
 describe('CVSS v4 Calculator', () => {
   describe('Calculate correctly base scores', () => {
-    Object.entries(cvssTests).map((entry) => {
+    Object.entries(cvssTests).forEach((entry) => {
       const cvss = entry[0];
       const baseScore = entry[1][0];
       it(`should calculate a score of ${baseScore} for ${cvss}`, () => {
         const score = new CvssV4Calculator().calculate(cvss).baseScore;
         expect(score).to.equal(baseScore);
       });
+    });
+  });
+
+  // Dataset collected from https://github.com/FIRSTdotorg/cvss-resources/tree/main/vectorFiles
+  describe('Calculate correctly base scores from reference dataset', () => {
+    const testCases = JSON.parse(
+      readFileSync(join(__dirname, 'cvss-v4-reference-scores.json'), 'utf-8')
+    );
+    const entries = Object.entries(testCases);
+
+    it(`reference dataset should contain ${entries.length} entries`, () => {
+      expect(entries.length).to.equal(40515);
+    });
+
+    it(`should calculate all ${entries.length} scores from reference dataset correctly`, () => {
+      let errors = 0;
+      entries.forEach(([cvss, score]) => {
+        const calculatedScore = new CvssV4Calculator().calculate(
+          cvss
+        ).baseScore;
+        errors = errors + (calculatedScore === score ? 0 : 1);
+      });
+      expect(errors).to.equal(0);
     });
   });
 });
