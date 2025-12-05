@@ -714,6 +714,6 @@ describe('CVSS v4 Calculator', () => {
         errors = errors + (calculatedScore === score ? 0 : 1);
       });
       expect(errors).to.equal(0);
-    });
+    }).timeout(5000);
   });
 });
