@@ -38,4 +38,8 @@ export interface CvssResultV2 extends BaseCvssResult {
   environmentalScore?: number;
 }
 
-export type CvssResult = CvssResultV3 | CvssResultV2;
+export interface CvssResultV4 extends BaseCvssResult {
+  version: '4.0';
+}
+
+export type CvssResult = CvssResultV3 | CvssResultV2 | CvssResultV4;

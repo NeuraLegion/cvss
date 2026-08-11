@@ -83,11 +83,7 @@ const checkMetricsValues = (
 export const validateByKnownMaps = (
   cvssStr: string,
   validateVersion: (versionStr: string | null) => void,
-  metrics: {
-    base: ReadonlyArray<string>;
-    temporal: ReadonlyArray<string>;
-    environmental: ReadonlyArray<string>;
-  },
+  metrics: Record<string, ReadonlyArray<string>>,
   knownMetricsValues: Record<string, string[]>,
   humanizer?: Humanizer
 ): ValidationResult => {
@@ -101,23 +97,21 @@ export const validateByKnownMaps = (
   const vectorStr = parseVector(cvssStr);
   validateVector(vectorStr);
 
-  const allMetrics = [
-    ...metrics.base,
-    ...metrics.temporal,
-    ...metrics.environmental
-  ];
+  const knownMetrics = Object.values(metrics).flat();
 
   const metricsMap = parseMetricsAsMap(cvssStr);
   checkMandatoryMetrics(metricsMap, metrics.base, humanizer);
-  checkUnknownMetrics(metricsMap, allMetrics);
-  checkMetricsValues(metricsMap, allMetrics, knownMetricsValues, humanizer);
+  checkUnknownMetrics(metricsMap, knownMetrics);
+  checkMetricsValues(metricsMap, knownMetrics, knownMetricsValues, humanizer);
 
-  const isTemporal = [...metricsMap.keys()].some((metric) =>
-    metrics.temporal.includes(metric)
-  );
-  const isEnvironmental = [...metricsMap.keys()].some((metric) =>
-    metrics.environmental.includes(metric)
-  );
+  const isTemporal =
+    !!metrics.temporal &&
+    [...metricsMap.keys()].some((metric) => metrics.temporal.includes(metric));
+  const isEnvironmental =
+    !!metrics.environmental &&
+    [...metricsMap.keys()].some((metric) =>
+      metrics.environmental.includes(metric)
+    );
 
   return {
     metricsMap,

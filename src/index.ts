@@ -1,9 +1,14 @@
-import type { CvssResult } from './common/CvssResult';
+import type {
+  CvssResult,
+  CvssResultV2,
+  CvssResultV3
+} from './common/CvssResult';
 import type { CvssVersion } from './common/CvssVersion';
 import { createCvssCalculator } from './factory';
 import { Metric, MetricValue } from './versions/v3/models';
 import { validate as validateV2 } from './versions/v2/validator';
 import { validate as validateV3 } from './versions/v3/validator';
+import { validate as validateV4 } from './versions/v4/validator';
 import { parseMetricsAsMap as parseMetricsAsMapString } from './parser';
 import { parseVersion } from './parser';
 
@@ -24,7 +29,12 @@ export const validate = (cvssString: string): void => {
   }
 
   const versionStr = parseVersion(cvssString);
-  const validateString = versionStr === '2.0' ? validateV2 : validateV3;
+  const validateString =
+    versionStr === '4.0'
+      ? validateV4
+      : versionStr === '2.0'
+      ? validateV2
+      : validateV3;
   validateString(cvssString);
 };
 
@@ -37,6 +47,12 @@ function calculateCvss(cvssString: string): CvssResult {
   validate(cvssString);
 
   return createCvssCalculator(version as CvssVersion).calculate(cvssString);
+}
+
+function assertNotCvssV4(cvssString: string): void {
+  if (parseVersion(cvssString) === '4.0') {
+    throw new Error('Only base score calculation is supported for CVSS v4.0');
+  }
 }
 
 /**
@@ -53,9 +69,13 @@ export const calculateBaseScore = (cvssString: string): number =>
  * @returns The temporal score (0-10)
  */
 export const calculateTemporalScore = (cvssString: string): number => {
+  assertNotCvssV4(cvssString);
+
   const res = calculateCvss(cvssString);
 
-  return res.temporalScore ?? res.baseScore;
+  return res.version === '4.0'
+    ? res.baseScore
+    : res.temporalScore ?? res.baseScore;
 };
 
 /**
@@ -64,9 +84,13 @@ export const calculateTemporalScore = (cvssString: string): number => {
  * @returns The environmental score (0-10)
  */
 export const calculateEnvironmentalScore = (cvssString: string): number => {
+  assertNotCvssV4(cvssString);
+
   const res = calculateCvss(cvssString);
 
-  return res.environmentalScore ?? res.temporalScore ?? res.baseScore;
+  return res.version === '4.0'
+    ? res.baseScore
+    : res.environmentalScore ?? res.temporalScore ?? res.baseScore;
 };
 
 /**
@@ -77,10 +101,19 @@ export const calculateEnvironmentalScore = (cvssString: string): number => {
 export const calculateBaseResult = (cvssString: string): ScoreResult => {
   const res = calculateCvss(cvssString);
 
+  if (res.version === '4.0') {
+    return {
+      score: res.baseScore,
+      impact: 0,
+      exploitability: 0,
+      metricsMap: res.metrics
+    };
+  }
+
   return {
     score: res.baseScore,
-    impact: res.baseImpact,
-    exploitability: res.baseExploitability,
+    impact: res.baseImpact ?? 0,
+    exploitability: res.baseExploitability ?? 0,
     metricsMap: res.metrics
   };
 };
@@ -91,12 +124,14 @@ export const calculateBaseResult = (cvssString: string): ScoreResult => {
  * @returns Score result with impact and exploitability
  */
 export const calculateTemporalResult = (cvssString: string): ScoreResult => {
-  const res = calculateCvss(cvssString);
+  assertNotCvssV4(cvssString);
+
+  const res = calculateCvss(cvssString) as CvssResultV2 | CvssResultV3;
 
   return {
     score: res.temporalScore ?? res.baseScore,
-    impact: res.baseImpact,
-    exploitability: res.baseExploitability,
+    impact: res.baseImpact ?? 0,
+    exploitability: res.baseExploitability ?? 0,
     metricsMap: res.metrics
   };
 };
@@ -109,18 +144,20 @@ export const calculateTemporalResult = (cvssString: string): ScoreResult => {
 export const calculateEnvironmentalResult = (
   cvssString: string
 ): ScoreResult => {
-  const res = calculateCvss(cvssString);
+  assertNotCvssV4(cvssString);
+
+  const res = calculateCvss(cvssString) as CvssResultV2 | CvssResultV3;
 
   return {
     score: res.environmentalScore ?? res.temporalScore ?? res.baseScore,
     impact:
       res.version === '2.0'
         ? res.baseImpact
-        : res.modifiedImpact ?? res.baseImpact,
+        : res.modifiedImpact ?? res.baseImpact ?? 0,
     exploitability:
       res.version === '2.0'
         ? res.baseExploitability
-        : res.modifiedExploitability ?? res.baseExploitability,
+        : res.modifiedExploitability ?? res.baseExploitability ?? 0,
     metricsMap: res.metrics
   };
 };
@@ -135,9 +172,14 @@ export const validateVersion = (versionStr: string | null): void => {
     );
   }
 
-  if (versionStr !== '2.0' && versionStr !== '3.0' && versionStr !== '3.1') {
+  if (
+    versionStr !== '2.0' &&
+    versionStr !== '3.0' &&
+    versionStr !== '3.1' &&
+    versionStr !== '4.0'
+  ) {
     throw new Error(
-      `Unsupported CVSS version: ${versionStr}. Only 2.0, 3.0 and 3.1 are supported.`
+      `Unsupported CVSS version: ${versionStr}. Only 2.0, 3.0, 3.1 and 4.0 are supported.`
     );
   }
 };
