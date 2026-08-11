@@ -241,13 +241,13 @@ export const humanizeMetricValue = (
       switch (value) {
         case 'X':
           return 'Not Defined';
-        case 'R':
+        case 'Red':
           return 'Red';
-        case 'A':
+        case 'Amber':
           return 'Amber';
-        case 'G':
+        case 'Green':
           return 'Green';
-        case 'C':
+        case 'Clear':
           return 'Clear';
       }
       break;
