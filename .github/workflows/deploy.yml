@@ -43,7 +43,18 @@ jobs:
         with:
           node-version: 14
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@NeuraLegion'
+          scope: '@BrightSec'
+
+      # GitHub Packages requires the package scope to match the org name.
+      # The package name in the repo (and on public npmjs.com) stays @neuralegion/cvss.
+      - name: Rename package for GitHub Packages
+        run: |
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.name = '@brightsec/cvss';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
 
       - run: npm publish
         env:

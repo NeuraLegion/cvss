@@ -4,7 +4,7 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NeuraLegion/cvss.git"
+    "url": "git+https://github.com/BrightSec/cvss.git"
   },
   "author": {
     "name": "Viachaslau Tyshkavets",
@@ -20,7 +20,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NeuraLegion/cvss/issues"
+    "url": "https://github.com/BrightSec/cvss/issues"
   },
   "husky": {
     "hooks": {
@@ -59,7 +59,7 @@
     "build": "tsc && rollup -c rollup.config.js",
     "prepublishOnly": "npm run build"
   },
-  "homepage": "https://github.com/NeuraLegion/cvss#readme",
+  "homepage": "https://github.com/BrightSec/cvss#readme",
   "dependencies": {
     "tslib": "~2.4.0"
   },

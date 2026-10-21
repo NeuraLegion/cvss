@@ -152,6 +152,6 @@ The CVSS v4 scoring lookup table in `src/versions/v4/cvss-lookup.ts` is derived 
 
 ## License
 
-Copyright © 2020 [NeuraLegion](https://github.com/NeuraLegion).
+Copyright © 2020 [Bright Security](https://github.com/BrightSec).
 
 This project is licensed under the MIT License - see the [LICENSE file](LICENSE) for details.
