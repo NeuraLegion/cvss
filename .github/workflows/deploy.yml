@@ -13,9 +13,9 @@ jobs:
       project: ${{ steps.project.outputs.value }}
     steps:
       - id: project_version
-        run: echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
+        run: echo "value=${GITHUB_REF/refs\/tags\//}" >> "$GITHUB_OUTPUT"
       - id: project
-        run: echo ::set-output name=value::$(echo ${GITHUB_REPOSITORY#*/} | tr A-Z a-z)
+        run: echo "value=$(echo ${GITHUB_REPOSITORY#*/} | tr A-Z a-z)" >> "$GITHUB_OUTPUT"
 
   deploy:
     runs-on: ubuntu-latest
@@ -24,13 +24,13 @@ jobs:
       PROJECT: ${{ needs.prepare.outputs.project }}
       VERSION: ${{ needs.prepare.outputs.project_version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GPR_TOKEN }}
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
       - run: npm version --no-git-tag-version "$VERSION"
@@ -39,22 +39,11 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 24
           registry-url: 'https://npm.pkg.github.com'
           scope: '@BrightSec'
-
-      # GitHub Packages requires the package scope to match the org name.
-      # The package name in the repo (and on public npmjs.com) stays @neuralegion/cvss.
-      - name: Rename package for GitHub Packages
-        run: |
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.name = '@brightsec/cvss';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
 
       - run: npm publish
         env:
