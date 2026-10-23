@@ -19,7 +19,7 @@ Score is: [3.8](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:
 
 ## Install 🚀
 
-`npm i --save @neuralegion/cvss`
+`npm i --save @brightsec/cvss`
 
 ## API
 
@@ -82,7 +82,7 @@ Return un-abbreviated metric value: e.g. 'Network' for input ('AV', 'N')
 <summary>ECMAScript 2015, Typescript modules</summary>
 
 ```
-import { calculateBaseScore } from '@neuralegion/cvss';
+import { calculateBaseScore } from '@brightsec/cvss';
 
 console.log('score: ', calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
 ```
@@ -93,7 +93,7 @@ console.log('score: ', calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/
 <summary>NodeJS (CommonJS module)</summary>
 
 ```
-const cvss = require('@neuralegion/cvss');
+const cvss = require('@brightsec/cvss');
 
 console.log(cvss.calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
 ```
@@ -107,7 +107,7 @@ console.log(cvss.calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:
 `usage.mjs` file:
 
 ```
-import cvss from '@neuralegion/cvss';
+import cvss from '@brightsec/cvss';
 
 console.log(cvss.calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N'));
 ```
@@ -120,7 +120,7 @@ Running: `node --experimental-modules ./usage.mjs`
 <summary>Browser (globals from umd bundle)</summary>
 
 ```
-<script src="./node_modules/@neuralegion/cvss/dist/bundle.umd.js"></script>
+<script src="./node_modules/@brightsec/cvss/dist/bundle.umd.js"></script>
 <script>
   alert(`Score: ${cvss.calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N')}`);
 </script>
@@ -133,7 +133,7 @@ Running: `node --experimental-modules ./usage.mjs`
 
 ```
 <script type="module">
-  import { calculateBaseScore } from './node_modules/@neuralegion/cvss/dist/bundle.es.js';
+  import { calculateBaseScore } from './node_modules/@brightsec/cvss/dist/bundle.es.js';
   alert(`Score: ${calculateBaseScore('CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N')}`);
 </script>
 ```
@@ -152,6 +152,6 @@ The CVSS v4 scoring lookup table in `src/versions/v4/cvss-lookup.ts` is derived 
 
 ## License
 
-Copyright © 2020 [NeuraLegion](https://github.com/NeuraLegion).
+Copyright © 2020 [Bright Security](https://github.com/BrightSec).
 
 This project is licensed under the MIT License - see the [LICENSE file](LICENSE) for details.

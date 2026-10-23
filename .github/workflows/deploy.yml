@@ -13,37 +13,40 @@ jobs:
       project: ${{ steps.project.outputs.value }}
     steps:
       - id: project_version
-        run: echo ::set-output name=value::${GITHUB_REF/refs\/tags\//}
+        run: echo "value=${GITHUB_REF/refs\/tags\//}" >> "$GITHUB_OUTPUT"
       - id: project
-        run: echo ::set-output name=value::$(echo ${GITHUB_REPOSITORY#*/} | tr A-Z a-z)
+        run: echo "value=$(echo ${GITHUB_REPOSITORY#*/} | tr A-Z a-z)" >> "$GITHUB_OUTPUT"
 
   deploy:
     runs-on: ubuntu-latest
     needs: prepare
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     env:
       PROJECT: ${{ needs.prepare.outputs.project }}
       VERSION: ${{ needs.prepare.outputs.project_version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GPR_TOKEN }}
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
       - run: npm version --no-git-tag-version "$VERSION"
       - run: npm ci -q
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm
+        run: npm publish
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 24
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@NeuraLegion'
+          scope: '@BrightSec'
 
       - run: npm publish
         env:
